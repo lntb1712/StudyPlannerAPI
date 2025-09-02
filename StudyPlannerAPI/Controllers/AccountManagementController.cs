@@ -8,9 +8,9 @@ using StudyPlannerAPI.Services.AccountManagementService;
 namespace StudyPlannerAPI.Controllers
 {
     [Route("api/[controller]")]
+    [ApiController]
     [Authorize(Policy = "PermissionPolicy")]
     [EnableCors("MyCors")]
-    [ApiController]
     public class AccountManagementController : ControllerBase
     {
         private readonly IAccountManagementService _accountManagementService;
