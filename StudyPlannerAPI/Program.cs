@@ -124,18 +124,12 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 
-builder.Services.AddCors(options =>
+builder.Services.AddCors(p => p.AddPolicy("MyCors", build =>
 {
-    options.AddPolicy("MyCors", policy =>
-    {
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
-    });
-});
-
+    build.AllowAnyOrigin()
+     .AllowAnyMethod()
+     .AllowAnyHeader();
+}));
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
