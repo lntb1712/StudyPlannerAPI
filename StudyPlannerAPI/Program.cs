@@ -32,12 +32,15 @@ builder.WebHost.ConfigureKestrel(options =>
 
 // Add services to the container.
 // Đăng ký DBContext
-builder.Services.AddDbContext<StudyPlannerContext>
-    (option =>
-    {
-        option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-    });
-
+//builder.Services.AddDbContext<StudyPlannerContext>
+//    (option =>
+//    {
+//        option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+//    });
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? Environment.GetEnvironmentVariable("DB_CONNECTION");
+builder.Services.AddDbContext<StudyPlannerContext>(options =>
+    options.UseSqlServer(connectionString));
 builder.Services.AddScoped<IAccountManagementRepository, AccountManagementRepository>();
 builder.Services.AddScoped<IGroupFunctionRepository, GroupFunctionRepository>();
 builder.Services.AddScoped<IGroupManagementRepository, GroupManagementRepository>();
