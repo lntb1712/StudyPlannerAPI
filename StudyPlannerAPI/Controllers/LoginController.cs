@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using StudyPlannerAPI.DTOs.LoginDTO;
@@ -8,6 +9,7 @@ namespace StudyPlannerAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("MyCors")]
     public class LoginController : ControllerBase
     {
         private readonly ILoginService _loginService;
