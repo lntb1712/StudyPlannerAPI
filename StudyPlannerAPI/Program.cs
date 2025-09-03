@@ -129,9 +129,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("MyCors", policy =>
     {
         policy
-            .WithOrigins(
-                "http://localhost:5173", // local
-                "https://study-planner-fe-swart.vercel.app") // production
+            .AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials();
