@@ -18,7 +18,17 @@ using StudyPlannerAPI.Services.JWTService;
 using StudyPlannerAPI.Services.LoginService;
 using System.Text;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Thêm đoạn này để Render biết dùng PORT nó cấp
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(int.Parse(port)); // lắng nghe trên PORT mà Render cấp
+});
+
 
 // Add services to the container.
 // Đăng ký DBContext
@@ -114,10 +124,7 @@ builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 builder.Services.AddCors(p => p.AddPolicy("MyCors", build =>
 {
     build
-        .WithOrigins(
-            "http://localhost:5173",   // Vue dev
-            "https://1234abcd.ngrok-free.app" // domain ngrok
-        )
+        
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials();
