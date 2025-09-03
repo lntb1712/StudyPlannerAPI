@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using StudyPlannerAPI.Permision;
-using StudyPlannerAPI.Permission;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -25,7 +24,7 @@ namespace StudyPlannerAPI.Permission
             if (string.IsNullOrEmpty(requestedPath))
                 return Task.CompletedTask;
 
-            // Parse JSON permission
+            // Parse JSON permission từ claim
             var permissionIds = userPermissionsJson
                 .Select(p =>
                 {
@@ -41,7 +40,7 @@ namespace StudyPlannerAPI.Permission
                 .Where(id => !string.IsNullOrEmpty(id))
                 .ToList();
 
-            // Check permission
+            // Check permission theo mapping
             foreach (var permId in permissionIds)
             {
                 if (PermissionToApiPatternMap.TryGetValue(permId, out var pattern) &&
@@ -52,15 +51,19 @@ namespace StudyPlannerAPI.Permission
                 }
             }
 
-            context.Fail(); // không match permission
+            context.Fail(); // không match permission nào
             return Task.CompletedTask;
         }
 
+        // Mapping PermissionId ↔ API Route
         private static readonly Dictionary<string, string> PermissionToApiPatternMap = new Dictionary<string, string>()
         {
             {"ucAccountManagement", @"^/api/AccountManagement"},
+            {"ucAssignment", @"^/api/Assignment"},
             {"ucGroupManagement", @"^/api/GroupManagement"},
-          
+            {"ucReminder", @"^/api/Reminder"},
+            {"ucSchedule", @"^/api/Schedule"},
+            {"ucTaskManagement", @"^/api/TaskManagement"},
         };
     }
 }

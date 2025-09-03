@@ -113,10 +113,16 @@ builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 
 builder.Services.AddCors(p => p.AddPolicy("MyCors", build =>
 {
-    build.AllowAnyOrigin()
-     .AllowAnyMethod()
-     .AllowAnyHeader();
+    build
+        .WithOrigins(
+            "http://localhost:5173",   // Vue dev
+            "https://1234abcd.ngrok-free.app" // domain ngrok
+        )
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
 }));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();

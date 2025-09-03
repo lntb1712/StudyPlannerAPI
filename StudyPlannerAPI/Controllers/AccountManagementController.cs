@@ -9,7 +9,6 @@ namespace StudyPlannerAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "PermissionPolicy")]
     [EnableCors("MyCors")]
     public class AccountManagementController : ControllerBase
     {
@@ -23,16 +22,22 @@ namespace StudyPlannerAPI.Controllers
         [HttpGet("GetAllAccount")]
         public async Task<IActionResult> GetAllAccount([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var response = await _accountManagementService.GetAllAccount(page, pageSize);
-            if (!response.Success)
+            try
             {
-                return NotFound(new
+                var response = await _accountManagementService.GetAllAccount(page, pageSize);
+                if (!response.Success)
                 {
-                    Success = false,
-                    Message = response.Message
-                });
+                    return NotFound(new
+                    {
+                        Success = false,
+                        Message = response.Message
+                    });
+                }
+                return Ok(response);
+            }catch (Exception ex)
+            {
+                return BadRequest($"Lỗi {ex}");
             }
-            return Ok(response);
         }
 
         [HttpGet("GetTotalAccount")]
