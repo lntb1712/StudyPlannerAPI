@@ -129,12 +129,16 @@ builder.Services.AddCors(options =>
     options.AddPolicy("MyCors", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173") // your frontend origin
+            .WithOrigins(
+                "http://localhost:5173", // local
+                "https://study-planner-fe-swart.vercel.app") // production
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials(); // only needed if sending cookies or auth headers
+            .AllowCredentials();
     });
 });
+
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -186,8 +190,8 @@ app.UseSwaggerUI(c => c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansi
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("MyCors");
+
 
 // sử dụng authen trước author
 app.UseAuthentication();
