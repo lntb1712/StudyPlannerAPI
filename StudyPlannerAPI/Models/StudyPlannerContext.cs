@@ -46,9 +46,12 @@ public partial class StudyPlannerContext : DbContext
     public virtual DbSet<TeacherClass> TeacherClasses { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-378LAM1\\MSSQLSERVER1;Database=StudyPlanner;User Id=sa;Password=123456;TrustServerCertificate=True;Encrypt=False;");
-
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            // Không cấu hình gì ở đây cả
+        }
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AccountManagement>(entity =>
