@@ -9,6 +9,7 @@ namespace StudyPlannerAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "PermissionPolicy")]
     [EnableCors("MyCors")]
     public class AccountManagementController : ControllerBase
     {

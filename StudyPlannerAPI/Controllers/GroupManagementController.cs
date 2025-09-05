@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StudyPlannerAPI.DTOs.GroupManagementDTO;
 using StudyPlannerAPI.Services.FunctionService;
@@ -9,6 +11,8 @@ namespace StudyPlannerAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "PermissionPolicy")]
+    [EnableCors("MyCors")]
     public class GroupManagementController : ControllerBase
     {
         private readonly IGroupManagementService _groupManagementService;
