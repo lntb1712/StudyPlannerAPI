@@ -10,12 +10,14 @@ using StudyPlannerAPI.Repositories.AccountManagementRepository;
 using StudyPlannerAPI.Repositories.FunctionRepository;
 using StudyPlannerAPI.Repositories.GroupFunctionRepository;
 using StudyPlannerAPI.Repositories.GroupManagementRepository;
+using StudyPlannerAPI.Repositories.ScheduleRepository;
 using StudyPlannerAPI.Services.AccountManagementService;
 using StudyPlannerAPI.Services.FunctionService;
 using StudyPlannerAPI.Services.GroupFunctionService;
 using StudyPlannerAPI.Services.GroupManagementService;
 using StudyPlannerAPI.Services.JWTService;
 using StudyPlannerAPI.Services.LoginService;
+using StudyPlannerAPI.Services.ScheduleService;
 using System.Text;
 
 
@@ -45,6 +47,7 @@ builder.Services.AddScoped<IAccountManagementRepository, AccountManagementReposi
 builder.Services.AddScoped<IGroupFunctionRepository, GroupFunctionRepository>();
 builder.Services.AddScoped<IGroupManagementRepository, GroupManagementRepository>();
 builder.Services.AddScoped<IFunctionRepository,FunctionRepository>();
+builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 //Add service
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
@@ -52,6 +55,7 @@ builder.Services.AddScoped<IAccountManagementService, AccountManagementService>(
 builder.Services.AddScoped<IGroupManagementService, GroupManagementService>();
 builder.Services.AddScoped<IGroupFunctionService, GroupFunctionService>();
 builder.Services.AddScoped<IFunctionService, FunctionService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 // Đăng ký IHttpContextAccessor để thực hiện sử dụng HttpCookie
 builder.Services.AddHttpContextAccessor();
