@@ -30,7 +30,8 @@ namespace StudyPlannerAPI.Services.ScheduleService
             string[] formats = {
                 "M/d/yyyy h:mm:ss tt",
                 "MM/dd/yyyy hh:mm:ss tt",
-                "dd/MM/yyyy HH:mm"
+                "dd/MM/yyyy HH:mm",
+                 "yyyy-MM-ddTHH:mm:ss.fffZ" // ISO 8601
             };
             if (!DateTime.TryParseExact(scheduleRequest.StartTime, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parseStartTime))
             {
@@ -234,7 +235,8 @@ namespace StudyPlannerAPI.Services.ScheduleService
             string[] formats = {
                 "M/d/yyyy h:mm:ss tt",
                 "MM/dd/yyyy hh:mm:ss tt",
-                "dd/MM/yyyy HH:mmt"
+                "dd/MM/yyyy HH:mm",
+                 "yyyy-MM-ddTHH:mm:ss.fffZ" // ISO 8601
             };
             if (!DateTime.TryParseExact(scheduleRequest.StartTime, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parseStartTime))
             {
