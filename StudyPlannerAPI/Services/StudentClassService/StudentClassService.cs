@@ -128,7 +128,7 @@ namespace StudyPlannerAPI.Services.StudentClassService
             return new ServiceResponse<StudentClassResponseDTO>(true, "Lấy thông tin sinh viên lớp thành công", studentClassResponse);
         }
 
-        public async Task<ServiceResponse<PagedResponse<StudentClassResponseDTO>>> GetStudentClassListAsync(int page, int pageSize)
+        public async Task<ServiceResponse<PagedResponse<StudentClassResponseDTO>>> GetStudentClassListAsync(string classId, int page, int pageSize)
         {
             if (page <= 0 || pageSize <= 0)
             {
@@ -136,20 +136,23 @@ namespace StudyPlannerAPI.Services.StudentClassService
             }
 
             var query =  _studentClassRepository.GetAllStudentClass();
-            var totalCount =  query.Count();
-            var lstStudentClass =  query.Select(x => new StudentClassResponseDTO
-            {
-                ClassId = x.ClassId,
-                StudentId = x.StudentId
-            })
-                                .Skip((page - 1) * pageSize)
-                                .Take(pageSize)
-                                .ToList();
+            var totalCount =  query.Where(x => x.ClassId == classId).Count();
+            var lstStudentClass =  query.Where(x=>x.ClassId==classId)
+                                        .Select(x => new StudentClassResponseDTO
+                                        {
+                                            ClassId = x.ClassId,
+                                            StudentId = x.StudentId,
+                                            StudentName =x.Student.FullName ?? "",
+                                            StudyStatus = x.StudyStatus
+                                        })
+                                        .Skip((page - 1) * pageSize)
+                                        .Take(pageSize)
+                                        .ToList();
             var pagedResponse = new PagedResponse<StudentClassResponseDTO>(lstStudentClass, page, pageSize, totalCount);
             return new ServiceResponse<PagedResponse<StudentClassResponseDTO>>(true, "Lấy danh sách sinh viên lớp thành công", pagedResponse);
         }
 
-        public async Task<ServiceResponse<PagedResponse<StudentClassResponseDTO>>> SearchStudentClassListAsync(string textToSearch, int page, int pageSize)
+        public async Task<ServiceResponse<PagedResponse<StudentClassResponseDTO>>> SearchStudentClassListAsync(string classId, string textToSearch, int page, int pageSize)
         {
             if (page <= 0 || pageSize <= 0)
             {
@@ -157,15 +160,18 @@ namespace StudyPlannerAPI.Services.StudentClassService
             }
 
             var query =  _studentClassRepository.SearchStudentClassByText(textToSearch);
-            var totalCount =  query.Count();
-            var lstStudentClass =  query.Select(x => new StudentClassResponseDTO
-            {
-                ClassId = x.ClassId,
-                StudentId = x.StudentId
-            })
-                                .Skip((page - 1) * pageSize)
-                                .Take(pageSize)
-                                .ToList();
+            var totalCount = query.Where(x => x.ClassId == classId).Count();
+            var lstStudentClass = query.Where(x => x.ClassId == classId)
+                                        .Select(x => new StudentClassResponseDTO
+                                        {
+                                            ClassId = x.ClassId,
+                                            StudentId = x.StudentId,
+                                            StudentName = x.Student.FullName ?? "",
+                                            StudyStatus = x.StudyStatus
+                                        })
+                                        .Skip((page - 1) * pageSize)
+                                        .Take(pageSize)
+                                        .ToList();
             var pagedResponse = new PagedResponse<StudentClassResponseDTO>(lstStudentClass, page, pageSize, totalCount);
             return new ServiceResponse<PagedResponse<StudentClassResponseDTO>>(true, "Lấy danh sách sinh viên lớp sau khi tìm thành công", pagedResponse);
         }

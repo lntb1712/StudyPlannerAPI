@@ -6,8 +6,8 @@ namespace StudyPlannerAPI.Services.TeacherClassService
 {
     public interface ITeacherClassService
     {
-        Task<ServiceResponse<PagedResponse<TeacherClassResponseDTO>>> GetTeacherClassListAsync(int page, int pageSize);
-        Task<ServiceResponse<PagedResponse<TeacherClassResponseDTO>>> SearchTeacherClassListAsync(string textToSearch, int page, int pageSize);
+        Task<ServiceResponse<PagedResponse<TeacherClassResponseDTO>>> GetTeacherClassListAsync(string classId,int page, int pageSize);
+        Task<ServiceResponse<PagedResponse<TeacherClassResponseDTO>>> SearchTeacherClassListAsync(string classId,string textToSearch, int page, int pageSize);
         Task<ServiceResponse<bool>> AddTeacherClass(TeacherClassRequestDTO teacherClassRequest);
         Task<ServiceResponse<bool>> DeleteTeacherClass(string classId,string teacherId);
         Task<ServiceResponse<bool>> UpdateTeacherClass(TeacherClassRequestDTO teacherClassRequest);

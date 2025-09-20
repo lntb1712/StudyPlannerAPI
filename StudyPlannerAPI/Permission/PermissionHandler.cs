@@ -60,6 +60,7 @@ namespace StudyPlannerAPI.Permission
         {
             {"ucAccountManagement", @"^/api/AccountManagement"},
             {"ucAssignment", @"^/api/Assignment"},
+            {"ucClassManagement", @"^/api/Class"},
             {"ucGroupManagement", @"^/api/GroupManagement"},
             {"ucReminder", @"^/api/Reminder"},
             {"ucSchedule", @"^/api/Schedule"},

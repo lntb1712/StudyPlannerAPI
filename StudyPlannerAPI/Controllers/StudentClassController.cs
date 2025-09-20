@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StudyPlannerAPI.DTOs.StudentClassDTO;
 using StudyPlannerAPI.Services.StudentClassService;
 
 namespace StudyPlannerAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Class/{ClassId}/[controller]")]
     [ApiController]
+    [Authorize(Policy = "PermissionPolicy")]
+    [EnableCors("MyCors")]
     public class StudentClassController : ControllerBase
     {
         private readonly IStudentClassService _studentClassService;
@@ -17,11 +21,11 @@ namespace StudyPlannerAPI.Controllers
         }
 
         [HttpGet("GetStudentClassListAsync")]
-        public async Task<IActionResult> GetStudentClassListAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetStudentClassListAsync([FromRoute] string classId,[FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
-                var response = await _studentClassService.GetStudentClassListAsync(page, pageSize);
+                var response = await _studentClassService.GetStudentClassListAsync(classId,page, pageSize);
                 if (!response.Success)
                 {
                     return NotFound(new
@@ -39,11 +43,11 @@ namespace StudyPlannerAPI.Controllers
         }
 
         [HttpGet("SearchStudentClassListAsync")]
-        public async Task<IActionResult> SearchStudentClassListAsync([FromQuery] string textToSearch, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> SearchStudentClassListAsync([FromRoute] string classId, [FromQuery] string textToSearch, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
-                var response = await _studentClassService.SearchStudentClassListAsync(textToSearch, page, pageSize);
+                var response = await _studentClassService.SearchStudentClassListAsync(classId,textToSearch, page, pageSize);
                 if (!response.Success)
                 {
                     return NotFound(new

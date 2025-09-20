@@ -123,13 +123,14 @@ namespace StudyPlannerAPI.Services.TeacherClassService
             {
                 ClassId = classId,
                 TeacherId = teacherId,
+                TeacherName = query.Teacher.FullName ?? "",
                 Subject = query.Subject,
             };
 
             return new ServiceResponse<TeacherClassResponseDTO>(true, "Lấy thông tin phân công thành công", teacherClassResponse);
         }
 
-        public async Task<ServiceResponse<PagedResponse<TeacherClassResponseDTO>>> GetTeacherClassListAsync(int page, int pageSize)
+        public async Task<ServiceResponse<PagedResponse<TeacherClassResponseDTO>>> GetTeacherClassListAsync(string classId,int page, int pageSize)
         {
             if (page <= 0 || pageSize <= 0)
             {
@@ -137,11 +138,13 @@ namespace StudyPlannerAPI.Services.TeacherClassService
             }
 
             var query =  _teacherClassRepository.GetAllTeacherClass();
-            var totalCount =  query.Count();
-            var lstTeacherClass =  query.Select(x => new TeacherClassResponseDTO
+            var totalCount =  query.Where(x => x.ClassId == classId).Count();
+            var lstTeacherClass =  query.Where(x => x.ClassId == classId)
+                                .Select(x => new TeacherClassResponseDTO
                                 {
                                     ClassId = x.ClassId,
                                     TeacherId = x.TeacherId,
+                                    TeacherName = x.Teacher.FullName ?? "",
                                     Subject = x.Subject,
                                 })
                                 .Skip((page - 1) * pageSize)
@@ -151,7 +154,7 @@ namespace StudyPlannerAPI.Services.TeacherClassService
             return new ServiceResponse<PagedResponse<TeacherClassResponseDTO>>(true, "Lấy danh sách phân công thành công", pagedResponse);
         }
 
-        public async Task<ServiceResponse<PagedResponse<TeacherClassResponseDTO>>> SearchTeacherClassListAsync(string textToSearch, int page, int pageSize)
+        public async Task<ServiceResponse<PagedResponse<TeacherClassResponseDTO>>> SearchTeacherClassListAsync(string classId,string textToSearch, int page, int pageSize)
         {
             if (page <= 0 || pageSize <= 0)
             {
@@ -159,11 +162,13 @@ namespace StudyPlannerAPI.Services.TeacherClassService
             }
 
             var query =  _teacherClassRepository.SearchTeacherClassByText(textToSearch);
-            var totalCount =  query.Count();
-            var lstTeacherClass =  query.Select(x => new TeacherClassResponseDTO
+            var totalCount =  query.Where(x => x.ClassId == classId).Count();
+            var lstTeacherClass =  query.Where(x => x.ClassId == classId)
+                .Select(x => new TeacherClassResponseDTO
             {
                 ClassId = x.ClassId,
                 TeacherId = x.TeacherId,
+                TeacherName = x.Teacher.FullName??"",
                 Subject = x.Subject,
             })
                                 .Skip((page - 1) * pageSize)

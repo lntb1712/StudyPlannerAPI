@@ -1,151 +1,155 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using StudyPlannerAPI.DTOs.ClassDTO;
-using StudyPlannerAPI.Services.ClassService;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using StudyPlannerAPI.DTOs.ClassDTO;
+    using StudyPlannerAPI.Services.ClassService;
 
-namespace StudyPlannerAPI.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ClassController : ControllerBase
+    namespace StudyPlannerAPI.Controllers
     {
-        private readonly IClassService _classService;
-
-        public ClassController(IClassService classService)
+        [Route("api/[controller]")]
+        [ApiController]
+        [Authorize(Policy = "PermissionPolicy")]
+        [EnableCors("MyCors")]
+        public class ClassController : ControllerBase
         {
-            _classService = classService;
-        }
+            private readonly IClassService _classService;
 
-        [HttpGet("GetClassListAsync")]
-        public async Task<IActionResult> GetClassListAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-        {
-            try
+            public ClassController(IClassService classService)
             {
-                var response = await _classService.GetClassListAsync(page, pageSize);
-                if (!response.Success)
+                _classService = classService;
+            }
+
+            [HttpGet("GetClassListAsync")]
+            public async Task<IActionResult> GetClassListAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+            {
+                try
                 {
-                    return NotFound(new
+                    var response = await _classService.GetClassListAsync(page, pageSize);
+                    if (!response.Success)
                     {
-                        Success = false,
-                        Message = response.Message
-                    });
+                        return NotFound(new
+                        {
+                            Success = false,
+                            Message = response.Message
+                        });
+                    }
+                    return Ok(response);
                 }
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpGet("SearchClassListAsync")]
-        public async Task<IActionResult> SearchClassListAsync([FromQuery] string textToSearch, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-        {
-            try
-            {
-                var response = await _classService.SearchClassListAsync(textToSearch, page, pageSize);
-                if (!response.Success)
+                catch (Exception ex)
                 {
-                    return NotFound(new
-                    {
-                        Success = false,
-                        Message = response.Message
-                    });
+                    return StatusCode(500, ex.Message);
                 }
-                return Ok(response);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
 
-        [HttpPost("AddClass")]
-        public async Task<IActionResult> AddClass([FromBody] ClassRequestDTO requestDTO)
-        {
-            try
+            [HttpGet("SearchClassListAsync")]
+            public async Task<IActionResult> SearchClassListAsync([FromQuery] string textToSearch, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
             {
-                var response = await _classService.AddClass(requestDTO);
-                if (!response.Success)
+                try
                 {
-                    return Conflict(new
+                    var response = await _classService.SearchClassListAsync(textToSearch, page, pageSize);
+                    if (!response.Success)
                     {
-                        Success = false,
-                        Message = response.Message
-                    });
+                        return NotFound(new
+                        {
+                            Success = false,
+                            Message = response.Message
+                        });
+                    }
+                    return Ok(response);
                 }
-                return Ok(response);
+                catch (Exception ex)
+                {
+                    return StatusCode(500, ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
 
-        [HttpPut("UpdateClass")]
-        public async Task<IActionResult> UpdateClass([FromBody] ClassRequestDTO requestDTO)
-        {
-            try
+            [HttpPost("AddClass")]
+            public async Task<IActionResult> AddClass([FromBody] ClassRequestDTO requestDTO)
             {
-                var response = await _classService.UpdateClass(requestDTO);
-                if (!response.Success)
+                try
                 {
-                    return Conflict(new
+                    var response = await _classService.AddClass(requestDTO);
+                    if (!response.Success)
                     {
-                        Success = false,
-                        Message = response.Message
-                    });
+                        return Conflict(new
+                        {
+                            Success = false,
+                            Message = response.Message
+                        });
+                    }
+                    return Ok(response);
                 }
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-        [HttpDelete("DeleteClass")]
-        public async Task<IActionResult> DeleteClass([FromQuery] string classId)
-        {
-            try
-            {
-                var response = await _classService.DeleteClass(classId);
-                if (!response.Success)
+                catch (Exception ex)
                 {
-                    return Conflict(new
-                    {
-                        Success = false,
-                        Message = response.Message
-                    });
+                    return StatusCode(500, ex.Message);
                 }
-                return Ok(response);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
 
-        [HttpGet("GetClassById")]
-        public async Task<IActionResult> GetClassById([FromQuery] string classId)
-        {
-            try
+            [HttpPut("UpdateClass")]
+            public async Task<IActionResult> UpdateClass([FromBody] ClassRequestDTO requestDTO)
             {
-                var response = await _classService.GetClassById(classId);
-                if (!response.Success)
+                try
                 {
-                    return NotFound(new
+                    var response = await _classService.UpdateClass(requestDTO);
+                    if (!response.Success)
                     {
-                        Success = false,
-                        Message = response.Message
-                    });
+                        return Conflict(new
+                        {
+                            Success = false,
+                            Message = response.Message
+                        });
+                    }
+                    return Ok(response);
                 }
-                return Ok(response);
+                catch (Exception ex)
+                {
+                    return StatusCode(500, ex.Message);
+                }
             }
-            catch (Exception ex)
+            [HttpDelete("DeleteClass")]
+            public async Task<IActionResult> DeleteClass([FromQuery] string classId)
             {
-                return StatusCode(500, ex.Message);
+                try
+                {
+                    var response = await _classService.DeleteClass(classId);
+                    if (!response.Success)
+                    {
+                        return Conflict(new
+                        {
+                            Success = false,
+                            Message = response.Message
+                        });
+                    }
+                    return Ok(response);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, ex.Message);
+                }
             }
-        }
 
+            [HttpGet("GetClassById")]
+            public async Task<IActionResult> GetClassById([FromQuery] string classId)
+            {
+                try
+                {
+                    var response = await _classService.GetClassById(classId);
+                    if (!response.Success)
+                    {
+                        return NotFound(new
+                        {
+                            Success = false,
+                            Message = response.Message
+                        });
+                    }
+                    return Ok(response);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, ex.Message);
+                }
+            }
+
+        }
     }
-}
