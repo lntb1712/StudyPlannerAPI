@@ -35,18 +35,12 @@ namespace StudyPlannerAPI.Services.ScheduleService
             };
             if (!DateTime.TryParseExact(scheduleRequest.StartTime, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parseStartTime))
             {
-                return new ServiceResponse<bool>(false, "Giờ bắt đầu không đúng định dạng.");
+                return new ServiceResponse<bool>(false, "Giờ bắt đầu không đúng định dạng. Vui lòng sử dụng dd/MM/yyyy hoặc M/d/yyyy h:mm:ss tt.");
             }
             if (!DateTime.TryParseExact(scheduleRequest.EndTime, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parseEndTime))
             {
-                return new ServiceResponse<bool>(false, "Giờ kết thúc không đúng định dạng.");
+                return new ServiceResponse<bool>(false, "Giờ kết thúc không đúng định dạng. Vui lòng sử dụng dd/MM/yyyy hoặc M/d/yyyy h:mm:ss tt.");
             }
-            // ép coi input là giờ VN, convert về UTC để lưu
-            TimeZoneInfo vnTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh"); // Windows
-                                                                                               // Nếu chạy Linux (Render) thì dùng: "Asia/Ho_Chi_Minh"
-
-            var startUtc = TimeZoneInfo.ConvertTimeToUtc(parseStartTime, vnTimeZone);
-            var endUtc = TimeZoneInfo.ConvertTimeToUtc(parseEndTime, vnTimeZone);
             var schedule = new Schedule
             {
                 StudentId = scheduleRequest.StudentId,
@@ -54,8 +48,8 @@ namespace StudyPlannerAPI.Services.ScheduleService
                 TeacherId = scheduleRequest.TeacherId,
                 Subject = scheduleRequest.Subject,
                 DayOfWeek = scheduleRequest.DayOfWeek,
-                StartTime = startUtc,
-                EndTime = endUtc,
+                StartTime = parseStartTime,
+                EndTime = parseEndTime,
                 StatusId = scheduleRequest.StatusId,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
@@ -244,21 +238,15 @@ namespace StudyPlannerAPI.Services.ScheduleService
                 "dd/MM/yyyy HH:mm",
                  "yyyy-MM-ddTHH:mm:ss.fffZ" // ISO 8601
             };
-            // Parse giờ từ client
             if (!DateTime.TryParseExact(scheduleRequest.StartTime, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parseStartTime))
             {
-                return new ServiceResponse<bool>(false, "Giờ bắt đầu không đúng định dạng.");
+                return new ServiceResponse<bool>(false, "Giờ bắt đầu không đúng định dạng. Vui lòng sử dụng dd/MM/yyyy hoặc M/d/yyyy h:mm:ss tt.");
             }
             if (!DateTime.TryParseExact(scheduleRequest.EndTime, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parseEndTime))
             {
-                return new ServiceResponse<bool>(false, "Giờ kết thúc không đúng định dạng.");
+                return new ServiceResponse<bool>(false, "Giờ kết thúc không đúng định dạng. Vui lòng sử dụng dd/MM/yyyy hoặc M/d/yyyy h:mm:ss tt.");
             }
-            // ép coi input là giờ VN, convert về UTC để lưu
-            TimeZoneInfo vnTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Ho_Chi_Minh"); // Windows
-                                                                                                    // Nếu chạy Linux (Render) thì dùng: "Asia/Ho_Chi_Minh"
 
-            var startUtc = TimeZoneInfo.ConvertTimeToUtc(parseStartTime, vnTimeZone);
-            var endUtc = TimeZoneInfo.ConvertTimeToUtc(parseEndTime, vnTimeZone);
             var existingSchedule = await _scheduleRepository.GetScheduleByIdAsync(scheduleId);
             if (existingSchedule == null)
             {
@@ -273,8 +261,8 @@ namespace StudyPlannerAPI.Services.ScheduleService
                     existingSchedule.TeacherId = scheduleRequest.TeacherId;
                     existingSchedule.Subject = scheduleRequest.Subject;
                     existingSchedule.DayOfWeek = scheduleRequest.DayOfWeek;
-                    existingSchedule.StartTime = startUtc;
-                    existingSchedule.EndTime = endUtc;
+                    existingSchedule.StartTime = parseStartTime;
+                    existingSchedule.EndTime = parseEndTime;
                     existingSchedule.StatusId = scheduleRequest.StatusId;
                     existingSchedule.UpdatedAt = DateTime.Now;
                     await _context.SaveChangesAsync();
