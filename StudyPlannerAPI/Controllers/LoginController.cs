@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using StudyPlannerAPI.DTOs.LoginDTO;
+using StudyPlannerAPI.Services.AccountManagementService;
 using StudyPlannerAPI.Services.LoginService;
 
 namespace StudyPlannerAPI.Controllers
@@ -14,10 +15,12 @@ namespace StudyPlannerAPI.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ILoginService _loginService;
+        private readonly IAccountManagementService _accountManagementService;
 
-        public LoginController(ILoginService loginService)
+        public LoginController(ILoginService loginService, IAccountManagementService accountManagementService)
         {
             _loginService = loginService;
+            _accountManagementService = accountManagementService;
         }
 
         [HttpPost("Authentication")]
@@ -34,5 +37,20 @@ namespace StudyPlannerAPI.Controllers
             }
             return Ok(response);
         }
+        [HttpGet("GetUserInformation")]
+        public async Task<IActionResult> GetUserInformation([FromQuery] string username)
+        {
+            var response = await _accountManagementService.GetUserInformation(username);
+            if (!response.Success)
+            {
+                return NotFound(new
+                {
+                    Success = false,
+                    Message = response.Message
+                });
+            }
+            return Ok(response);
+        }
+
     }
 }

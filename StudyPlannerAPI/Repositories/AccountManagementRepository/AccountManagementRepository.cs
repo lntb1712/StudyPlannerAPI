@@ -16,6 +16,10 @@ namespace StudyPlannerAPI.Repositories.AccountManagementRepository
         {
             var user = await _context.AccountManagements
                                      .Include(x=>x.Group)
+                                     .Include(x=>x.StudentClasses)
+                                     .ThenInclude(x=>x.Class)
+                                     .Include(x=>x.TeacherClasses)
+                                     .ThenInclude(x=>x.Class)
                                      .FirstOrDefaultAsync(x => 
                                      EF.Functions.Collate(x.UserName, "SQL_Latin1_General_CP1_CS_AS") == username);
             //Catch Upper and Lower when user Typing

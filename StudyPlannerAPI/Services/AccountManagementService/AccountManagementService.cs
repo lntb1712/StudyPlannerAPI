@@ -121,7 +121,8 @@ namespace StudyPlannerAPI.Services.AccountManagementService
                                 ParentEmail = x.ParentEmail,
                                 GroupId = x.GroupId,
                                 GroupName = x.Group!.GroupName,
-                                CreatedAt = x.CreatedAt!.Value.ToString("dd/MM/yyyy")
+                                CreatedAt = x.CreatedAt!.Value.ToString("dd/MM/yyyy"),
+                               
                             })
                             .Skip((page - 1) * pageSize)
                             .Take(pageSize)
@@ -181,7 +182,13 @@ namespace StudyPlannerAPI.Services.AccountManagementService
                 ParentEmail = existingAccount.ParentEmail,
                 GroupId = existingAccount.GroupId,
                 GroupName = existingAccount.Group!.GroupId,
-                CreatedAt = existingAccount.CreatedAt!.Value.ToString("dd/MM/yyyy")
+                CreatedAt = existingAccount.CreatedAt!.Value.ToString("dd/MM/yyyy"),
+                ClassId = existingAccount.GroupId?.StartsWith("HS") == true
+                ? (existingAccount.StudentClasses?.FirstOrDefault()?.ClassId ?? string.Empty)
+                : string.Join(",", existingAccount.TeacherClasses?.Select(tc => tc.ClassId) ?? Enumerable.Empty<string>()),
+                ClassName = existingAccount.GroupId?.StartsWith("HS") == true
+                ? (existingAccount.StudentClasses?.FirstOrDefault()?.Class?.ClassName ?? string.Empty)
+                : string.Join(", ", existingAccount.TeacherClasses?.Select(tc => tc.Class?.ClassName ?? string.Empty) ?? Enumerable.Empty<string>()),
             };
             return new ServiceResponse<AccountManagementResponseDTO>(true, "Lấy thông tin tài khoản thành công", accountDto);
         }

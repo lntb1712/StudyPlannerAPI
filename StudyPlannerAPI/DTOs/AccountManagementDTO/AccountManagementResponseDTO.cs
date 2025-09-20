@@ -14,6 +14,9 @@
 
         public string? GroupName { get; set; }
 
+        public string? ClassId { get; set; }
+        public string? ClassName { get; set; }
+
         public string? CreatedAt { get; set; }
     }
 }
