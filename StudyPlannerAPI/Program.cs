@@ -7,29 +7,35 @@ using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Permision;
 using StudyPlannerAPI.Permission;
 using StudyPlannerAPI.Repositories.AccountManagementRepository;
+using StudyPlannerAPI.Repositories.ClassRepository;
 using StudyPlannerAPI.Repositories.FunctionRepository;
 using StudyPlannerAPI.Repositories.GroupFunctionRepository;
 using StudyPlannerAPI.Repositories.GroupManagementRepository;
 using StudyPlannerAPI.Repositories.ScheduleRepository;
+using StudyPlannerAPI.Repositories.StudentClassRepository;
+using StudyPlannerAPI.Repositories.TeacherClassRepository;
 using StudyPlannerAPI.Services.AccountManagementService;
+using StudyPlannerAPI.Services.ClassService;
 using StudyPlannerAPI.Services.FunctionService;
 using StudyPlannerAPI.Services.GroupFunctionService;
 using StudyPlannerAPI.Services.GroupManagementService;
 using StudyPlannerAPI.Services.JWTService;
 using StudyPlannerAPI.Services.LoginService;
 using StudyPlannerAPI.Services.ScheduleService;
+using StudyPlannerAPI.Services.StudentClassService;
+using StudyPlannerAPI.Services.TeacherClassService;
 using System.Text;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Thêm đoạn này để Render biết dùng PORT nó cấp
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+//// Thêm đoạn này để Render biết dùng PORT nó cấp
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(int.Parse(port)); // lắng nghe trên PORT mà Render cấp
-});
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    options.ListenAnyIP(int.Parse(port)); // lắng nghe trên PORT mà Render cấp
+//});
 
 
 // Add services to the container.
@@ -48,6 +54,9 @@ builder.Services.AddScoped<IGroupFunctionRepository, GroupFunctionRepository>();
 builder.Services.AddScoped<IGroupManagementRepository, GroupManagementRepository>();
 builder.Services.AddScoped<IFunctionRepository,FunctionRepository>();
 builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+builder.Services.AddScoped<IClassRepository, ClassRepository>();
+builder.Services.AddScoped<IStudentClassRepository, StudentClassRepository>();
+builder.Services.AddScoped<ITeacherClassRepository, TeacherClassRepository>();
 //Add service
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
@@ -56,6 +65,9 @@ builder.Services.AddScoped<IGroupManagementService, GroupManagementService>();
 builder.Services.AddScoped<IGroupFunctionService, GroupFunctionService>();
 builder.Services.AddScoped<IFunctionService, FunctionService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<IClassService,ClassService>();
+builder.Services.AddScoped<IStudentClassService,StudentClassService>();
+builder.Services.AddScoped<ITeacherClassService, TeacherClassService>();
 
 // Đăng ký IHttpContextAccessor để thực hiện sử dụng HttpCookie
 builder.Services.AddHttpContextAccessor();
