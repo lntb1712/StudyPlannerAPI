@@ -19,7 +19,6 @@ namespace StudyPlannerAPI.Repositories.TeacherClassRepository
             return _context.TeacherClasses
                            .Include(x => x.Teacher)
                            .Include(x => x.Class)
-                           .AsNoTracking()
                            .AsEnumerable();
         }
 
@@ -28,7 +27,6 @@ namespace StudyPlannerAPI.Repositories.TeacherClassRepository
             var response = await _context.TeacherClasses
                                          .Include(x => x.Teacher)
                                          .Include(x => x.Class)
-                                         .AsNoTracking()
                                          .FirstOrDefaultAsync(x => x.TeacherId == teacherId && x.ClassId == classId);
             return response!;
         }
@@ -42,7 +40,6 @@ namespace StudyPlannerAPI.Repositories.TeacherClassRepository
                                   x.Class.ClassName!.Contains(textToSearch) ||
                                   x.Teacher.FullName!.Contains(textToSearch) ||
                                   x.Subject!.Contains(textToSearch))
-                           .AsNoTracking()
                            .AsEnumerable();
         }
     }

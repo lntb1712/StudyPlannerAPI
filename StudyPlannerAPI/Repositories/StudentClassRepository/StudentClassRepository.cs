@@ -18,7 +18,6 @@ namespace StudyPlannerAPI.Repositories.StudentClassRepository
             return _context.StudentClasses
                            .Include(x => x.Class)
                            .Include(x => x.Student)
-                           .AsNoTracking()
                            .AsQueryable();
         }
 
@@ -27,7 +26,6 @@ namespace StudyPlannerAPI.Repositories.StudentClassRepository
            var response= await _context.StudentClasses
                                 .Include(x => x.Class)
                                 .Include(x => x.Student)
-                                .AsNoTracking()
                                 .FirstOrDefaultAsync(sc => sc.StudentId == studentId && sc.ClassId == classId)!;
            return response!;
         }
@@ -39,7 +37,6 @@ namespace StudyPlannerAPI.Repositories.StudentClassRepository
                            .Include(x => x.Student)
                            .Where(sc => (sc.Student != null && sc.Student.FullName != null && sc.Student.FullName.Contains(textToSearch)) ||
                                         (sc.Class != null && sc.Class.ClassName != null && sc.Class.ClassName.Contains(textToSearch)))
-                           .AsNoTracking()
                            .AsQueryable();
         }
     }

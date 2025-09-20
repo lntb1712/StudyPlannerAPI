@@ -196,7 +196,7 @@ namespace StudyPlannerAPI.Services.StudentClassService
                     existing.StudyStatus = studentClassRequest.StudyStatus;
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
-                    return new ServiceResponse<bool>(true, "Cập nhật sinh viên lớp thành công");
+                    return new ServiceResponse<bool>(true, "Cập nhật sinh viên lớp thành công",true);
                 }
                 catch (DbUpdateException dbEx)
                 {
