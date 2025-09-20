@@ -22,7 +22,7 @@ namespace StudyPlannerAPI.Repositories.StudentClassRepository
                            .AsQueryable();
         }
 
-        public async Task<StudentClass> GetStudentClassbyIdAsync(string studentId, string classId)
+        public async Task<StudentClass> GetStudentClassbyIdAsync(string classId, string studentId)
         {
            var response= await _context.StudentClasses
                                 .Include(x => x.Class)

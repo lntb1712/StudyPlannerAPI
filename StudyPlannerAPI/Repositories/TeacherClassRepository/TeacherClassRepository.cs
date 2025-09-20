@@ -23,7 +23,7 @@ namespace StudyPlannerAPI.Repositories.TeacherClassRepository
                            .AsEnumerable();
         }
 
-        public async Task<TeacherClass> GetTeacherClassByIdAsync(string teacherId, string classId)
+        public async Task<TeacherClass> GetTeacherClassByIdAsync(string classId, string teacherId)
         {
             var response = await _context.TeacherClasses
                                          .Include(x => x.Teacher)
