@@ -12,6 +12,7 @@ namespace StudyPlannerAPI.Services.TeacherClassService
         Task<ServiceResponse<bool>> DeleteTeacherClass(string classId,string teacherId);
         Task<ServiceResponse<bool>> UpdateTeacherClass(TeacherClassRequestDTO teacherClassRequest);
         Task<ServiceResponse<TeacherClassResponseDTO>> GetTeacherClassByID(string classId,string teacherId);
+        Task<ServiceResponse<List<TeacherClassResponseDTO>>> GetTeacherByClassID(string classId);
     }
 }
  

@@ -151,5 +151,26 @@ namespace StudyPlannerAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        [HttpGet("GetTeacherByClassID")]
+        public async Task<IActionResult> GetTeacherByClassID([FromQuery] string classId)
+        {
+            try
+            {
+                var response = await _teacherClassService.GetTeacherByClassID(classId);
+                if (!response.Success)
+                {
+                    return NotFound(new
+                    {
+                        Success = false,
+                        Message = response.Message
+                    });
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }
