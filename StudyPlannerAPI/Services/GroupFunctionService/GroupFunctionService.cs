@@ -53,7 +53,7 @@ namespace StudyPlannerAPI.Services.GroupFunctionService
         public async Task<ServiceResponse<List<GroupFunctionResponseDTO>>> GetGroupFunctionWithGroupID(string groupId)
         {
             var lstGroupFunction = await _groupFunctionRepository.GetAllGroupsFunctionWithGroupId(groupId);
-            if (lstGroupFunction == null || lstGroupFunction.Count == 0)
+            if (lstGroupFunction == null)
             {
                 return new ServiceResponse<List<GroupFunctionResponseDTO>>(false, "Không có dữ liệu nhóm chức năng", new List<GroupFunctionResponseDTO>());
             }

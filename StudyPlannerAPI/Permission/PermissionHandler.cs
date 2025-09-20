@@ -66,5 +66,5 @@ namespace StudyPlannerAPI.Permission
             {"ucSchedule", @"^/api/Schedule"},
             {"ucTaskManagement", @"^/api/TaskManagement"},
         };
-    }
+    }   
 }
