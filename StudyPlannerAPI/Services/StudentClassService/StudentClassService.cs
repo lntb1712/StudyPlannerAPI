@@ -193,7 +193,7 @@ namespace StudyPlannerAPI.Services.StudentClassService
             {
                 try
                 {
-                    // No additional fields to update in this model; commit if exists
+                    existing.StudyStatus = studentClassRequest.StudyStatus;
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
                     return new ServiceResponse<bool>(true, "Cập nhật sinh viên lớp thành công");
