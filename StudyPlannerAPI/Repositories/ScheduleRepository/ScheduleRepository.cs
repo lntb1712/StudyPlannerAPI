@@ -20,7 +20,6 @@ namespace StudyPlannerAPI.Repositories.ScheduleRepository
                                     .Include(x=>x.Teacher)
                                     .Include(x=>x.Class)
                                     .Include(x=>x.Status)
-                                    .AsNoTracking()
                                     .AsQueryable();
             return schedules; 
         }
@@ -32,7 +31,6 @@ namespace StudyPlannerAPI.Repositories.ScheduleRepository
                                    .Include(x => x.Teacher)
                                    .Include(x => x.Class)
                                    .Include(x => x.Status)
-                                   .AsNoTracking()
                                    .FirstOrDefaultAsync(s => s.ScheduleId == scheduleId);
             return schedule!;
         }
@@ -49,7 +47,6 @@ namespace StudyPlannerAPI.Repositories.ScheduleRepository
                                         (s.Teacher != null && s.Teacher.FullName != null && s.Teacher.FullName.Contains(textToSearch)) ||
                                         (s.Class != null && s.Class.ClassName != null && s.Class.ClassName.Contains(textToSearch)) ||
                                         (s.Status != null && s.Status.StatusName != null && s.Status.StatusName.Contains(textToSearch)))
-                            .AsNoTracking()
                             .AsQueryable();
         }
     }
