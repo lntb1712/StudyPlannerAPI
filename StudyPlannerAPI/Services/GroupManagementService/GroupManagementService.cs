@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StudyPlannerAPI.DTO;
+using StudyPlannerAPI.DTOs.GroupFunctionDTO;
 using StudyPlannerAPI.DTOs.GroupManagementDTO;
 using StudyPlannerAPI.Models;
+using StudyPlannerAPI.Repositories.FunctionRepository;
 using StudyPlannerAPI.Repositories.GroupFunctionRepository;
 using StudyPlannerAPI.Repositories.GroupManagementRepository;
 
@@ -11,12 +13,18 @@ namespace StudyPlannerAPI.Services.GroupManagementService
     {
         private readonly IGroupManagementRepository _groupManagementRepository;
         private readonly IGroupFunctionRepository _groupFunctionRepository;
+        private readonly IFunctionRepository _functionRepository; // Thêm để kiểm tra Function tồn tại (nếu cần)
         private readonly StudyPlannerContext _context;
 
-        public GroupManagementService(IGroupManagementRepository groupManagementRepository, IGroupFunctionRepository groupFunctionRepository, StudyPlannerContext context)
+        public GroupManagementService(
+            IGroupManagementRepository groupManagementRepository,
+            IGroupFunctionRepository groupFunctionRepository,
+            IFunctionRepository functionRepository, // Thêm dependency
+            StudyPlannerContext context)
         {
             _groupManagementRepository = groupManagementRepository;
             _groupFunctionRepository = groupFunctionRepository;
+            _functionRepository = functionRepository;
             _context = context;
         }
 
@@ -305,6 +313,93 @@ namespace StudyPlannerAPI.Services.GroupManagementService
                     await transaction.RollbackAsync();
                     return new ServiceResponse<bool>(false, "Lỗi không xác định: " + ex.Message);
                 }
+            }
+        }
+        // Method mới: Kiểm tra và tạo group PH_yyyy nếu chưa tồn tại
+        public async Task<ServiceResponse<string>> EnsureParentGroupExists()
+        {
+            var currentYear = DateTime.Now.Year;
+            var parentGroupId = $"PH_{currentYear}"; // Ví dụ: PH_2025
+            var parentGroupName = "Phụ huynh";
+            var parentGroupDescription = "Nhóm quyền mặc định cho phụ huynh năm " + currentYear;
+
+            // Kiểm tra group đã tồn tại chưa
+            var existingGroup = await _groupManagementRepository.GetGroupManagementWithGroupID(parentGroupId);
+            if (existingGroup != null)
+            {
+                return new ServiceResponse<string>(true, "Nhóm phụ huynh đã tồn tại", parentGroupId);
+            }
+
+
+            // Tạo group mới
+            var groupRequest = new GroupManagementRequestDTO
+            {
+                GroupId = parentGroupId,
+                GroupName = parentGroupName,
+                GroupDescription = parentGroupDescription,
+                GroupFunctions = new List<GroupFunctionResponseDTO>
+                {
+                    new GroupFunctionResponseDTO
+                    {
+                        GroupId = parentGroupId,
+                        FunctionId = "ucAccountManagement",
+                        IsEnable = false,
+                        IsReadOnly = false
+                    },
+                    new GroupFunctionResponseDTO
+                    {
+                        GroupId = parentGroupId,
+                        FunctionId = "ucAssignment",
+                        IsEnable = false,
+                        IsReadOnly = false
+                    },
+                    new GroupFunctionResponseDTO
+                    {
+                        GroupId = parentGroupId,
+                        FunctionId = "ucClassManagement",
+                        IsEnable = false,
+                        IsReadOnly = false
+                    },
+                    new GroupFunctionResponseDTO
+                    {
+                        GroupId = parentGroupId,
+                        FunctionId = "ucGroupManagement",
+                        IsEnable = false,
+                        IsReadOnly = false
+                    },
+                    new GroupFunctionResponseDTO
+                    {
+                        GroupId = parentGroupId,
+                        FunctionId = "ucReminder",
+                        IsEnable = true,
+                        IsReadOnly = false
+                    },
+                    new GroupFunctionResponseDTO
+                    {
+                        GroupId = parentGroupId,
+                        FunctionId = "ucSchedule",
+                        IsEnable = true,
+                        IsReadOnly = true
+                    },
+                    new GroupFunctionResponseDTO
+                    {
+                        GroupId = parentGroupId,
+                        FunctionId = "ucTaskManagement",
+                        IsEnable = false,
+                        IsReadOnly = false
+                    }
+
+                }
+            };
+
+            var createResponse = await AddGroupManagement(groupRequest);
+            if (createResponse.Success)
+            {
+                return new ServiceResponse<string>(true, "Tạo nhóm phụ huynh thành công", parentGroupId);
+            }
+            else
+            {
+                return new ServiceResponse<string>(false, createResponse.Message, null!);
             }
         }
     }

@@ -13,5 +13,6 @@ namespace StudyPlannerAPI.Services.GroupManagementService
         Task<ServiceResponse<PagedResponse<GroupManagementResponseDTO>>> SearchGroup(string textToSearch, int page, int pageSize);
         Task<ServiceResponse<List<GroupManagementTotalDTO>>> GetTotalUserInGroup();
         Task<ServiceResponse<int>> GetTotalGroupCount();
+        Task<ServiceResponse<string>> EnsureParentGroupExists();
     }
 }

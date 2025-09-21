@@ -16,6 +16,7 @@ using StudyPlannerAPI.Repositories.StudentClassRepository;
 using StudyPlannerAPI.Repositories.TeacherClassRepository;
 using StudyPlannerAPI.Services.AccountManagementService;
 using StudyPlannerAPI.Services.ClassService;
+using StudyPlannerAPI.Services.EmailService;
 using StudyPlannerAPI.Services.FunctionService;
 using StudyPlannerAPI.Services.GroupFunctionService;
 using StudyPlannerAPI.Services.GroupManagementService;
@@ -49,6 +50,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? Environment.GetEnvironmentVariable("DB_CONNECTION");
 builder.Services.AddDbContext<StudyPlannerContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAccountManagementRepository, AccountManagementRepository>();
 builder.Services.AddScoped<IGroupFunctionRepository, GroupFunctionRepository>();
 builder.Services.AddScoped<IGroupManagementRepository, GroupManagementRepository>();
