@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StudyPlannerAPI.Models;
@@ -50,6 +51,12 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? Environment.GetEnvironmentVariable("DB_CONNECTION");
 builder.Services.AddDbContext<StudyPlannerContext>(options =>
     options.UseSqlServer(connectionString));
+// Thiết lập Redis Cache (IDistributedCache)
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis"); // Hoặc hardcode: "localhost:6379"
+    // Nếu dùng password: options.Configuration = "localhost:6379,password=yourpassword";
+});
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAccountManagementRepository, AccountManagementRepository>();

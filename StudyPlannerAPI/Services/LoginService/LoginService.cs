@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.AccountManagementDTO;
 using StudyPlannerAPI.DTOs.GroupFunctionDTO;
@@ -23,8 +24,9 @@ namespace StudyPlannerAPI.Services.LoginService
         private readonly IAccountManagementService _accountManagementService;
         private readonly IGroupManagementService _groupManagementService; // Thêm dependency
 
-        // Dictionary để lưu OTP tạm thời (in-memory, chỉ cho demo. Production dùng Redis/DB với expire)
-        private readonly Dictionary<string, (string Otp, DateTime Expiry)> _otpStorage = new();
+        // Sử dụng DistributedCache cho OTP (production-ready với expire tự động)
+
+        private readonly IDistributedCache _cache;
 
         public LoginService(
             IJWTService jwtService,
@@ -32,7 +34,8 @@ namespace StudyPlannerAPI.Services.LoginService
             IGroupFunctionRepository groupFunctionRepository,
             IEmailService emailService,
             IAccountManagementService accountManagementService,
-            IGroupManagementService groupManagementService) // Thêm constructor param
+            IGroupManagementService groupManagementService,
+            IDistributedCache cache) // Thêm constructor param
         {
             _jwtService = jwtService;
             _accountManagementRepository = accountManagementRepository;
@@ -40,6 +43,7 @@ namespace StudyPlannerAPI.Services.LoginService
             _emailService = emailService;
             _accountManagementService = accountManagementService;
             _groupManagementService = groupManagementService; // Khởi tạo
+            _cache = cache;
         }
 
         public async Task<ServiceResponse<LoginResponseDTO>> LoginAsync(LoginRequestDTO loginRequest)
@@ -105,16 +109,19 @@ namespace StudyPlannerAPI.Services.LoginService
             // Tạo OTP 6 chữ số
             var random = new Random();
             var otpCode = random.Next(100000, 999999).ToString();
-            var expiry = DateTime.UtcNow.AddMinutes(5); // Hết hạn sau 5 phút
 
-            // Lưu OTP vào storage tạm (in-memory, production dùng Redis)
-            _otpStorage[email] = (otpCode, expiry);
+            // Lưu OTP vào cache với expire 5 phút
+            await _cache.SetStringAsync($"otp:{email}", otpCode, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            });
 
             // Gửi email
             var emailResponse = await _emailService.SendOTPAsync(email, otpCode, "Phụ huynh");
             if (!emailResponse.Success)
             {
-                _otpStorage.Remove(email); // Xóa nếu gửi thất bại
+                // Xóa nếu gửi thất bại
+                await _cache.RemoveAsync($"otp:{email}");
                 return new ServiceResponse<bool>(false, emailResponse.Message);
             }
 
@@ -129,19 +136,17 @@ namespace StudyPlannerAPI.Services.LoginService
                 return new ServiceResponse<bool>(false, "Email hoặc mã OTP không được để trống");
             }
 
-            if (!_otpStorage.TryGetValue(email, out var stored) || DateTime.UtcNow > stored.Expiry)
+            // Lấy OTP từ cache
+            var storedOtp = await _cache.GetStringAsync($"otp:{email}");
+            if (string.IsNullOrEmpty(storedOtp) || storedOtp != otpCode)
             {
-                _otpStorage.Remove(email); // Xóa nếu hết hạn
+                // Xóa nếu không hợp lệ (đã expire hoặc sai)
+                await _cache.RemoveAsync($"otp:{email}");
                 return new ServiceResponse<bool>(false, "Mã OTP không hợp lệ hoặc đã hết hạn");
             }
 
-            if (stored.Otp != otpCode)
-            {
-                return new ServiceResponse<bool>(false, "Mã OTP không đúng");
-            }
-
             // Xóa OTP sau verify thành công
-            _otpStorage.Remove(email);
+            await _cache.RemoveAsync($"otp:{email}");
             return new ServiceResponse<bool>(true, "Xác thực OTP thành công");
         }
 
