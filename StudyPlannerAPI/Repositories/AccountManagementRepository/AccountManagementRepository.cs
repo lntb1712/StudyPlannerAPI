@@ -16,7 +16,7 @@ namespace StudyPlannerAPI.Repositories.AccountManagementRepository
         {
             var user = await _context.AccountManagements
                                      .Include(x=>x.Group)
-                                     .Include(x=>x.StudentClasses)
+                                     .Include(x=>x.StudentClass)
                                      .ThenInclude(x=>x.Class)
                                      .Include(x=>x.TeacherClasses)
                                      .ThenInclude(x=>x.Class)

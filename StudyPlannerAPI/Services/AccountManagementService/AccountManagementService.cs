@@ -193,10 +193,10 @@ namespace StudyPlannerAPI.Services.AccountManagementService
                 GroupName = existingAccount.Group!.GroupId,
                 CreatedAt = existingAccount.CreatedAt!.Value.ToString("dd/MM/yyyy"),
                 ClassId = existingAccount.GroupId?.StartsWith("HS") == true
-                ? (existingAccount.StudentClasses?.FirstOrDefault()?.ClassId ?? string.Empty)
+                ? (existingAccount.StudentClass?.ClassId ?? string.Empty)
                 : string.Join(",", existingAccount.TeacherClasses?.Select(tc => tc.ClassId) ?? Enumerable.Empty<string>()),
                 ClassName = existingAccount.GroupId?.StartsWith("HS") == true
-                ? (existingAccount.StudentClasses?.FirstOrDefault()?.Class?.ClassName ?? string.Empty)
+                ? (existingAccount.StudentClass?.Class?.ClassName ?? string.Empty)
                 : string.Join(", ", existingAccount.TeacherClasses?.Select(tc => tc.Class?.ClassName ?? string.Empty) ?? Enumerable.Empty<string>()),
             };
             return new ServiceResponse<AccountManagementResponseDTO>(true, "Lấy thông tin tài khoản thành công", accountDto);
