@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.ScheduleDTO;
 using StudyPlannerAPI.Models;
+using StudyPlannerAPI.Repositories.AccountManagementRepository;
 using StudyPlannerAPI.Repositories.ScheduleRepository;
 using System.Globalization;
 using System.Security.Cryptography.Xml;
@@ -13,11 +15,13 @@ namespace StudyPlannerAPI.Services.ScheduleService
     public class ScheduleService : IScheduleService
     {
         private readonly IScheduleRepository _scheduleRepository;
+        private readonly IAccountManagementRepository _accountManagementRepository;
         private readonly StudyPlannerContext _context;
 
-        public ScheduleService(IScheduleRepository scheduleRepository, StudyPlannerContext context)
+        public ScheduleService(IScheduleRepository scheduleRepository, IAccountManagementRepository accountManagementRepository, StudyPlannerContext context)
         {
             _scheduleRepository = scheduleRepository;
+            _accountManagementRepository = accountManagementRepository;
             _context = context;
         }
 
@@ -135,33 +139,55 @@ namespace StudyPlannerAPI.Services.ScheduleService
 
         public async Task<ServiceResponse<List<ScheduleResponseDTO>>> GetAllSchedulesAsync(string studentId)
         {
-
-            if (string.IsNullOrEmpty(studentId))
+            if (string.IsNullOrWhiteSpace(studentId))
             {
                 return new ServiceResponse<List<ScheduleResponseDTO>>(false, "ID sinh viên không hợp lệ");
             }
 
-            var query = _scheduleRepository.GetAllSchedulesAsync();
-            var filteredSchedules = query.Where(s => s.StudentId == studentId)
-                                         .Select(x => new ScheduleResponseDTO
-                                         {
-                                             ScheduleId = x.ScheduleId,
-                                             StudentId = x.StudentId,
-                                             StudentName = x.Student != null ? x.Student.FullName : null,
-                                             ClassId = x.ClassId,
-                                             ClassName = x.Class != null ? x.Class.ClassName : null,
-                                             TeacherId = x.TeacherId,
-                                             TeacherName = x.Teacher != null ? x.Teacher.FullName : null,
-                                             Subject = x.Subject,
-                                             DayOfWeek = x.DayOfWeek,
-                                             StartTime = x.StartTime!.Value.ToString("dd/MM/yyyy HH:mm:ss"),
-                                             EndTime = x.EndTime!.Value.ToString("dd/MM/yyyy HH:mm:ss"),
-                                             StatusId = x.StatusId,
-                                             StatusName = x.Status != null ? x.Status.StatusName : null,
-                                             CreatedAt = x.CreatedAt!.Value.ToString("dd/MM/yyyy HH:mm:ss"),
-                                             UpdatedAt = x.UpdatedAt!.Value.ToString("dd/MM/yyyy HH:mm:ss")
+            // Lấy account
+            var studentAccount = await _accountManagementRepository
+                .GetAllAccount()
+                .FirstOrDefaultAsync(x => x.UserName == studentId);
 
-                                         }).ToList();
+            if (studentAccount == null)
+            {
+                return new ServiceResponse<List<ScheduleResponseDTO>>(false, "Không tìm thấy sinh viên");
+            }
+
+            // Nếu là phụ huynh thì tìm học sinh con
+            string targetStudentId = studentAccount.ParentEmail == null
+                ? await _accountManagementRepository
+                    .GetAllAccount()
+                    .Where(x => x.ParentEmail == studentAccount.Email)
+                    .Select(x => x.UserName)
+                    .FirstOrDefaultAsync() ?? studentId
+                : studentId;
+
+            // Query lịch
+            var schedules =  _scheduleRepository.GetAllSchedulesAsync(); // giả sử trả IQueryable<Schedule>
+
+            var filteredSchedules =  schedules
+                .Where(s => s.StudentId == studentId || s.StudentId == targetStudentId)
+                .Select(x => new ScheduleResponseDTO
+                {
+                    ScheduleId = x.ScheduleId,
+                    StudentId = x.StudentId,
+                    StudentName = x.Student != null ? x.Student.FullName : null,
+                    ClassId = x.ClassId,
+                    ClassName = x.Class != null ? x.Class.ClassName : null,
+                    TeacherId = x.TeacherId,
+                    TeacherName = x.Teacher != null ? x.Teacher.FullName : null,
+                    Subject = x.Subject,
+                    DayOfWeek = x.DayOfWeek,
+                    StartTime = x.StartTime!.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                    EndTime = x.EndTime!.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                    StatusId = x.StatusId,
+                    StatusName = x.Status != null ? x.Status.StatusName : null,
+                    CreatedAt = x.CreatedAt!.Value.ToString("dd/MM/yyyy HH:mm:ss"),
+                    UpdatedAt = x.UpdatedAt!.Value.ToString("dd/MM/yyyy HH:mm:ss")
+
+                }).ToList();
+
             return new ServiceResponse<List<ScheduleResponseDTO>>(true, "Lấy lịch thành công", filteredSchedules);
         }
 
@@ -202,7 +228,7 @@ namespace StudyPlannerAPI.Services.ScheduleService
                 return new ServiceResponse<List<ScheduleResponseDTO>>(false, "ID sinh viên không hợp lệ");
             }
 
-            var query =  _scheduleRepository.SearchScheduleAsync(textToSearch);
+            var query = _scheduleRepository.SearchScheduleAsync(textToSearch);
             var filteredSchedules = query.Where(s => s.StudentId == studentId)
                                          .Select(x => new ScheduleResponseDTO
                                          {

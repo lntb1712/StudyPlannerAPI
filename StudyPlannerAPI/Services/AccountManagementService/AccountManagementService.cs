@@ -21,6 +21,13 @@ namespace StudyPlannerAPI.Services.AccountManagementService
         {
             if (string.IsNullOrEmpty(account.UserName) || account == null)
                 return new ServiceResponse<bool>(false, "Tên người dùng không được để trống hoặc thông tin nhập vào không hợp lệ");
+            
+            var existingAccount = await _accountManagementRepository.GetAllAccount()
+                 .FirstOrDefaultAsync(x => x.Email == account.Email);
+            if (existingAccount != null)
+            {
+                return new ServiceResponse<bool>(false, "Email đã được sử dụng");
+            }
             var newAccount = new AccountManagement
             {
                 UserName = account.UserName,
@@ -31,11 +38,13 @@ namespace StudyPlannerAPI.Services.AccountManagementService
                 GroupId = account.GroupId,
                 CreatedAt = DateTime.Now
             };
-
+          
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
+                   
+
                     await _accountManagementRepository.AddAsync(newAccount, saveChanges:false);
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();

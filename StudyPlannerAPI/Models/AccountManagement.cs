@@ -11,7 +11,7 @@ public partial class AccountManagement
 
     public string? FullName { get; set; }
 
-    public string? Email { get; set; }
+    public string Email { get; set; } = null!;
 
     public string? GroupId { get; set; }
 
@@ -39,7 +39,7 @@ public partial class AccountManagement
 
     public virtual ICollection<Schedule> ScheduleTeachers { get; set; } = new List<Schedule>();
 
-    public virtual ICollection<StudentClass> StudentClasses { get; set; } = new List<StudentClass>();
+    public virtual StudentClass? StudentClass { get; set; }
 
     public virtual ICollection<TaskManagement> TaskManagements { get; set; } = new List<TaskManagement>();
 

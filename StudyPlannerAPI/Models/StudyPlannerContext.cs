@@ -56,24 +56,28 @@ public partial class StudyPlannerContext : DbContext
     {
         modelBuilder.Entity<AccountManagement>(entity =>
         {
-            entity.HasKey(e => e.UserName).HasName("PK__AccountM__C9F28457979AC487");
+            entity.HasKey(e => e.UserName).HasName("PK__AccountM__C9F28457F7405936");
 
             entity.ToTable("AccountManagement");
 
+            entity.HasIndex(e => e.Email, "UQ_Account_Email").IsUnique();
+
             entity.Property(e => e.UserName).HasMaxLength(100);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.GroupId)
                 .HasMaxLength(100)
                 .HasColumnName("GroupID");
+            entity.Property(e => e.ParentEmail).HasMaxLength(255);
 
             entity.HasOne(d => d.Group).WithMany(p => p.AccountManagements)
                 .HasForeignKey(d => d.GroupId)
-                .HasConstraintName("FK__AccountMa__Group__5165187F");
+                .HasConstraintName("FK__AccountMa__Group__52593CB8");
         });
 
         modelBuilder.Entity<Assignment>(entity =>
         {
-            entity.HasKey(e => e.AssignmentId).HasName("PK__Assignme__32499E57711B0F91");
+            entity.HasKey(e => e.AssignmentId).HasName("PK__Assignme__32499E57DEE56025");
 
             entity.ToTable("Assignment");
 
@@ -89,16 +93,16 @@ public partial class StudyPlannerContext : DbContext
 
             entity.HasOne(d => d.Class).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.ClassId)
-                .HasConstraintName("FK__Assignmen__Class__5FB337D6");
+                .HasConstraintName("FK__Assignmen__Class__534D60F1");
 
             entity.HasOne(d => d.Teacher).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.TeacherId)
-                .HasConstraintName("FK__Assignmen__Teach__60A75C0F");
+                .HasConstraintName("FK__Assignmen__Teach__5441852A");
         });
 
         modelBuilder.Entity<AssignmentDetail>(entity =>
         {
-            entity.HasKey(e => new { e.AssignmentId, e.StudentId }).HasName("PK__Assignme__B165CCF088A5F160");
+            entity.HasKey(e => new { e.AssignmentId, e.StudentId }).HasName("PK__Assignme__B165CCF045578B00");
 
             entity.ToTable("AssignmentDetail");
 
@@ -112,21 +116,21 @@ public partial class StudyPlannerContext : DbContext
             entity.HasOne(d => d.Assignment).WithMany(p => p.AssignmentDetails)
                 .HasForeignKey(d => d.AssignmentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Assignmen__Assig__6383C8BA");
+                .HasConstraintName("FK__Assignmen__Assig__5535A963");
 
             entity.HasOne(d => d.Status).WithMany(p => p.AssignmentDetails)
                 .HasForeignKey(d => d.StatusId)
-                .HasConstraintName("FK__Assignmen__Statu__656C112C");
+                .HasConstraintName("FK__Assignmen__Statu__5629CD9C");
 
             entity.HasOne(d => d.Student).WithMany(p => p.AssignmentDetails)
                 .HasForeignKey(d => d.StudentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Assignmen__Stude__6477ECF3");
+                .HasConstraintName("FK__Assignmen__Stude__571DF1D5");
         });
 
         modelBuilder.Entity<Class>(entity =>
         {
-            entity.HasKey(e => e.ClassId).HasName("PK__Class__CB1927A03A7BB166");
+            entity.HasKey(e => e.ClassId).HasName("PK__Class__CB1927A04A86734F");
 
             entity.ToTable("Class");
 
@@ -137,7 +141,7 @@ public partial class StudyPlannerContext : DbContext
 
         modelBuilder.Entity<Function>(entity =>
         {
-            entity.HasKey(e => e.FunctionId).HasName("PK__Function__31ABF9183097793A");
+            entity.HasKey(e => e.FunctionId).HasName("PK__Function__31ABF9189805C1E3");
 
             entity.ToTable("Function");
 
@@ -148,7 +152,7 @@ public partial class StudyPlannerContext : DbContext
 
         modelBuilder.Entity<GroupFunction>(entity =>
         {
-            entity.HasKey(e => new { e.GroupId, e.FunctionId }).HasName("PK__GroupFun__87804C9BCB0CBA0E");
+            entity.HasKey(e => new { e.GroupId, e.FunctionId }).HasName("PK__GroupFun__87804C9B084ECC03");
 
             entity.ToTable("GroupFunction");
 
@@ -162,17 +166,17 @@ public partial class StudyPlannerContext : DbContext
             entity.HasOne(d => d.Function).WithMany(p => p.GroupFunctions)
                 .HasForeignKey(d => d.FunctionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__GroupFunc__Funct__4E88ABD4");
+                .HasConstraintName("FK__GroupFunc__Funct__5812160E");
 
             entity.HasOne(d => d.Group).WithMany(p => p.GroupFunctions)
                 .HasForeignKey(d => d.GroupId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__GroupFunc__Group__4D94879B");
+                .HasConstraintName("FK__GroupFunc__Group__59063A47");
         });
 
         modelBuilder.Entity<GroupManagement>(entity =>
         {
-            entity.HasKey(e => e.GroupId).HasName("PK__GroupMan__149AF30A1CB2C6C4");
+            entity.HasKey(e => e.GroupId).HasName("PK__GroupMan__149AF30A55614189");
 
             entity.ToTable("GroupManagement");
 
@@ -184,7 +188,7 @@ public partial class StudyPlannerContext : DbContext
 
         modelBuilder.Entity<Messaging>(entity =>
         {
-            entity.HasKey(e => e.MessageId).HasName("PK__Messagin__C87C037CD016FEB6");
+            entity.HasKey(e => e.MessageId).HasName("PK__Messagin__C87C037C272EFF53");
 
             entity.ToTable("Messaging");
 
@@ -199,16 +203,16 @@ public partial class StudyPlannerContext : DbContext
 
             entity.HasOne(d => d.Receiver).WithMany(p => p.MessagingReceivers)
                 .HasForeignKey(d => d.ReceiverId)
-                .HasConstraintName("FK__Messaging__Recei__778AC167");
+                .HasConstraintName("FK__Messaging__Recei__59FA5E80");
 
             entity.HasOne(d => d.Sender).WithMany(p => p.MessagingSenders)
                 .HasForeignKey(d => d.SenderId)
-                .HasConstraintName("FK__Messaging__Sende__76969D2E");
+                .HasConstraintName("FK__Messaging__Sende__5AEE82B9");
         });
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E32220DCA3F");
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E326604634D");
 
             entity.ToTable("Notification");
 
@@ -219,12 +223,12 @@ public partial class StudyPlannerContext : DbContext
 
             entity.HasOne(d => d.UserNameNavigation).WithMany(p => p.Notifications)
                 .HasForeignKey(d => d.UserName)
-                .HasConstraintName("FK__Notificat__UserN__7A672E12");
+                .HasConstraintName("FK__Notificat__UserN__5BE2A6F2");
         });
 
         modelBuilder.Entity<Reminder>(entity =>
         {
-            entity.HasKey(e => e.ReminderId).HasName("PK__Reminder__01A830A79B4F00EE");
+            entity.HasKey(e => e.ReminderId).HasName("PK__Reminder__01A830A7FE6F919C");
 
             entity.ToTable("Reminder");
 
@@ -241,20 +245,20 @@ public partial class StudyPlannerContext : DbContext
 
             entity.HasOne(d => d.Parent).WithMany(p => p.ReminderParents)
                 .HasForeignKey(d => d.ParentId)
-                .HasConstraintName("FK__Reminder__Parent__6C190EBB");
+                .HasConstraintName("FK__Reminder__Parent__5CD6CB2B");
 
             entity.HasOne(d => d.Status).WithMany(p => p.Reminders)
                 .HasForeignKey(d => d.StatusId)
-                .HasConstraintName("FK__Reminder__Status__6E01572D");
+                .HasConstraintName("FK__Reminder__Status__5DCAEF64");
 
             entity.HasOne(d => d.Student).WithMany(p => p.ReminderStudents)
                 .HasForeignKey(d => d.StudentId)
-                .HasConstraintName("FK__Reminder__Studen__6D0D32F4");
+                .HasConstraintName("FK__Reminder__Studen__5EBF139D");
         });
 
         modelBuilder.Entity<Schedule>(entity =>
         {
-            entity.HasKey(e => e.ScheduleId).HasName("PK__Schedule__9C8A5B691FD3625B");
+            entity.HasKey(e => e.ScheduleId).HasName("PK__Schedule__9C8A5B69734A4053");
 
             entity.ToTable("Schedule");
 
@@ -277,24 +281,24 @@ public partial class StudyPlannerContext : DbContext
 
             entity.HasOne(d => d.Class).WithMany(p => p.Schedules)
                 .HasForeignKey(d => d.ClassId)
-                .HasConstraintName("FK__Schedule__ClassI__72C60C4A");
+                .HasConstraintName("FK__Schedule__ClassI__5FB337D6");
 
             entity.HasOne(d => d.Status).WithMany(p => p.Schedules)
                 .HasForeignKey(d => d.StatusId)
-                .HasConstraintName("FK__Schedule__Status__73BA3083");
+                .HasConstraintName("FK__Schedule__Status__60A75C0F");
 
             entity.HasOne(d => d.Student).WithMany(p => p.ScheduleStudents)
                 .HasForeignKey(d => d.StudentId)
-                .HasConstraintName("FK__Schedule__Studen__70DDC3D8");
+                .HasConstraintName("FK__Schedule__Studen__619B8048");
 
             entity.HasOne(d => d.Teacher).WithMany(p => p.ScheduleTeachers)
                 .HasForeignKey(d => d.TeacherId)
-                .HasConstraintName("FK__Schedule__Teache__71D1E811");
+                .HasConstraintName("FK__Schedule__Teache__628FA481");
         });
 
         modelBuilder.Entity<StatusMaster>(entity =>
         {
-            entity.HasKey(e => e.StatusId).HasName("PK__StatusMa__C8EE204347C5F32F");
+            entity.HasKey(e => e.StatusId).HasName("PK__StatusMa__C8EE20434317A56D");
 
             entity.ToTable("StatusMaster");
 
@@ -305,9 +309,11 @@ public partial class StudyPlannerContext : DbContext
 
         modelBuilder.Entity<StudentClass>(entity =>
         {
-            entity.HasKey(e => new { e.ClassId, e.StudentId }).HasName("PK__StudentC__483575078CCBB027");
+            entity.HasKey(e => new { e.ClassId, e.StudentId }).HasName("PK__StudentC__48357507A5275373");
 
             entity.ToTable("StudentClass");
+
+            entity.HasIndex(e => e.StudentId, "idx_student_unique").IsUnique();
 
             entity.Property(e => e.ClassId)
                 .HasMaxLength(100)
@@ -319,17 +325,17 @@ public partial class StudyPlannerContext : DbContext
             entity.HasOne(d => d.Class).WithMany(p => p.StudentClasses)
                 .HasForeignKey(d => d.ClassId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__StudentCl__Class__59FA5E80");
+                .HasConstraintName("FK__StudentCl__Class__6383C8BA");
 
-            entity.HasOne(d => d.Student).WithMany(p => p.StudentClasses)
-                .HasForeignKey(d => d.StudentId)
+            entity.HasOne(d => d.Student).WithOne(p => p.StudentClass)
+                .HasForeignKey<StudentClass>(d => d.StudentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__StudentCl__Stude__5AEE82B9");
+                .HasConstraintName("FK__StudentCl__Stude__6477ECF3");
         });
 
         modelBuilder.Entity<TaskManagement>(entity =>
         {
-            entity.HasKey(e => e.TaskId).HasName("PK__TaskMana__7C6949D19EF02D26");
+            entity.HasKey(e => e.TaskId).HasName("PK__TaskMana__7C6949D16043B7FD");
 
             entity.ToTable("TaskManagement");
 
@@ -344,16 +350,16 @@ public partial class StudyPlannerContext : DbContext
 
             entity.HasOne(d => d.Status).WithMany(p => p.TaskManagements)
                 .HasForeignKey(d => d.StatusId)
-                .HasConstraintName("FK__TaskManag__Statu__693CA210");
+                .HasConstraintName("FK__TaskManag__Statu__656C112C");
 
             entity.HasOne(d => d.Student).WithMany(p => p.TaskManagements)
                 .HasForeignKey(d => d.StudentId)
-                .HasConstraintName("FK__TaskManag__Stude__68487DD7");
+                .HasConstraintName("FK__TaskManag__Stude__66603565");
         });
 
         modelBuilder.Entity<TeacherClass>(entity =>
         {
-            entity.HasKey(e => new { e.ClassId, e.TeacherId }).HasName("PK__TeacherC__95C60234AE1E659F");
+            entity.HasKey(e => new { e.ClassId, e.TeacherId }).HasName("PK__TeacherC__95C60234CA1FA2DE");
 
             entity.ToTable("TeacherClass");
 
@@ -367,12 +373,12 @@ public partial class StudyPlannerContext : DbContext
             entity.HasOne(d => d.Class).WithMany(p => p.TeacherClasses)
                 .HasForeignKey(d => d.ClassId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__TeacherCl__Class__5629CD9C");
+                .HasConstraintName("FK__TeacherCl__Class__6754599E");
 
             entity.HasOne(d => d.Teacher).WithMany(p => p.TeacherClasses)
                 .HasForeignKey(d => d.TeacherId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__TeacherCl__Teach__571DF1D5");
+                .HasConstraintName("FK__TeacherCl__Teach__68487DD7");
         });
 
         OnModelCreatingPartial(modelBuilder);

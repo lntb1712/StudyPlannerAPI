@@ -157,9 +157,14 @@ namespace StudyPlannerAPI.Services.LoginService
             {
                 return new ServiceResponse<bool>(false, "Mật khẩu phải ít nhất 6 ký tự");
             }
-
+            var existingParent = await _accountManagementRepository.GetAllAccount()
+                                       .FirstOrDefaultAsync(x => x.ParentEmail == email);
+            if (existingParent == null)
+            {
+                return new ServiceResponse<bool>(false, "Không tìm thấy phụ huynh trong hệ thống");
+            }
             var existingAccount = await _accountManagementRepository.GetAllAccount()
-                .FirstOrDefaultAsync(x => x.Email == email || x.ParentEmail == email);
+                .FirstOrDefaultAsync(x => x.Email == email);
             if (existingAccount != null)
             {
                 return new ServiceResponse<bool>(false, "Email đã được sử dụng");
@@ -176,9 +181,9 @@ namespace StudyPlannerAPI.Services.LoginService
             {
                 UserName = email,
                 Password = password,
-                FullName = fullName,
+                FullName = fullName + $"(Phụ huynh của {existingParent.FullName})",
                 Email = email,
-                ParentEmail = email,
+                ParentEmail = "",
                 GroupId = parentGroupId
             };
 
