@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.AccountManagementDTO;
 using StudyPlannerAPI.DTOs.GroupFunctionDTO;
@@ -10,7 +10,7 @@ using StudyPlannerAPI.Repositories.AccountManagementRepository;
 using StudyPlannerAPI.Repositories.GroupFunctionRepository;
 using StudyPlannerAPI.Services.AccountManagementService;
 using StudyPlannerAPI.Services.EmailService;
-using StudyPlannerAPI.Services.GroupManagementService; // Thêm import
+using StudyPlannerAPI.Services.GroupManagementService;
 using StudyPlannerAPI.Services.JWTService;
 
 namespace StudyPlannerAPI.Services.LoginService
@@ -22,11 +22,10 @@ namespace StudyPlannerAPI.Services.LoginService
         private readonly IGroupFunctionRepository _groupFunctionRepository;
         private readonly IEmailService _emailService;
         private readonly IAccountManagementService _accountManagementService;
-        private readonly IGroupManagementService _groupManagementService; // Thêm dependency
+        private readonly IGroupManagementService _groupManagementService;
 
-        // Sử dụng DistributedCache cho OTP (production-ready với expire tự động)
-
-        private readonly IDistributedCache _cache;
+        // Dùng MemoryCache thay cho DistributedCache
+        private readonly IMemoryCache _cache;
 
         public LoginService(
             IJWTService jwtService,
@@ -35,14 +34,14 @@ namespace StudyPlannerAPI.Services.LoginService
             IEmailService emailService,
             IAccountManagementService accountManagementService,
             IGroupManagementService groupManagementService,
-            IDistributedCache cache) // Thêm constructor param
+            IMemoryCache cache) // Thay IDistributedCache thành IMemoryCache
         {
             _jwtService = jwtService;
             _accountManagementRepository = accountManagementRepository;
             _groupFunctionRepository = groupFunctionRepository;
             _emailService = emailService;
             _accountManagementService = accountManagementService;
-            _groupManagementService = groupManagementService; // Khởi tạo
+            _groupManagementService = groupManagementService;
             _cache = cache;
         }
 
@@ -61,7 +60,6 @@ namespace StudyPlannerAPI.Services.LoginService
             }
             else if (!BCrypt.Net.BCrypt.Verify(loginRequest.Password.Trim(), account.Password!))
             {
-                // Kiểm tra mật khẩu
                 return new ServiceResponse<LoginResponseDTO>(false, "Mật khẩu không đúng");
             }
 
@@ -98,7 +96,6 @@ namespace StudyPlannerAPI.Services.LoginService
                 return new ServiceResponse<bool>(false, "Email không hợp lệ");
             }
 
-            // Kiểm tra nếu email đã tồn tại (tùy chọn, để tránh spam)
             var existingAccount = await _accountManagementRepository.GetAllAccount()
                 .FirstOrDefaultAsync(x => x.Email == email || x.ParentEmail == email);
             if (existingAccount != null)
@@ -110,18 +107,14 @@ namespace StudyPlannerAPI.Services.LoginService
             var random = new Random();
             var otpCode = random.Next(100000, 999999).ToString();
 
-            // Lưu OTP vào cache với expire 5 phút
-            await _cache.SetStringAsync($"otp:{email}", otpCode, new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
-            });
+            // Lưu OTP vào MemoryCache, expire sau 5 phút
+            _cache.Set($"otp:{email}", otpCode, TimeSpan.FromMinutes(5));
 
             // Gửi email
             var emailResponse = await _emailService.SendOTPAsync(email, otpCode, "Phụ huynh");
             if (!emailResponse.Success)
             {
-                // Xóa nếu gửi thất bại
-                await _cache.RemoveAsync($"otp:{email}");
+                _cache.Remove($"otp:{email}");
                 return new ServiceResponse<bool>(false, emailResponse.Message);
             }
 
@@ -136,17 +129,14 @@ namespace StudyPlannerAPI.Services.LoginService
                 return new ServiceResponse<bool>(false, "Email hoặc mã OTP không được để trống");
             }
 
-            // Lấy OTP từ cache
-            var storedOtp = await _cache.GetStringAsync($"otp:{email}");
-            if (string.IsNullOrEmpty(storedOtp) || storedOtp != otpCode)
+            // Lấy OTP từ MemoryCache
+            if (!_cache.TryGetValue($"otp:{email}", out string? storedOtp) || storedOtp != otpCode)
             {
-                // Xóa nếu không hợp lệ (đã expire hoặc sai)
-                await _cache.RemoveAsync($"otp:{email}");
+                _cache.Remove($"otp:{email}");
                 return new ServiceResponse<bool>(false, "Mã OTP không hợp lệ hoặc đã hết hạn");
             }
 
-            // Xóa OTP sau verify thành công
-            await _cache.RemoveAsync($"otp:{email}");
+            _cache.Remove($"otp:{email}");
             return new ServiceResponse<bool>(true, "Xác thực OTP thành công");
         }
 
@@ -168,7 +158,6 @@ namespace StudyPlannerAPI.Services.LoginService
                 return new ServiceResponse<bool>(false, "Mật khẩu phải ít nhất 6 ký tự");
             }
 
-            // Kiểm tra email đã tồn tại chưa
             var existingAccount = await _accountManagementRepository.GetAllAccount()
                 .FirstOrDefaultAsync(x => x.Email == email || x.ParentEmail == email);
             if (existingAccount != null)
@@ -176,22 +165,21 @@ namespace StudyPlannerAPI.Services.LoginService
                 return new ServiceResponse<bool>(false, "Email đã được sử dụng");
             }
 
-            // Gọi EnsureParentGroupExists để lấy hoặc tạo group cho phụ huynh
             var groupResponse = await _groupManagementService.EnsureParentGroupExists();
             if (!groupResponse.Success)
             {
                 return new ServiceResponse<bool>(false, groupResponse.Message);
             }
-            var parentGroupId = groupResponse.Data; // Lấy GroupId từ response
+            var parentGroupId = groupResponse.Data;
 
             var accountRequest = new AccountManagementRequestDTO
             {
-                UserName = email, // Sử dụng email làm username cho parent
+                UserName = email,
                 Password = password,
                 FullName = fullName,
                 Email = email,
-                ParentEmail = email, // Parent email là chính email này
-                GroupId = parentGroupId // Sử dụng GroupId từ EnsureParentGroupExists
+                ParentEmail = email,
+                GroupId = parentGroupId
             };
 
             var createResponse = await _accountManagementService.AddAccountManagement(accountRequest);
