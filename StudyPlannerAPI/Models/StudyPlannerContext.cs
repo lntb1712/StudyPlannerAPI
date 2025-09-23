@@ -45,13 +45,15 @@ public partial class StudyPlannerContext : DbContext
 
     public virtual DbSet<TeacherClass> TeacherClasses { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+
         if (!optionsBuilder.IsConfigured)
         {
             // Không cấu hình gì ở đây cả
         }
+
     }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AccountManagement>(entity =>

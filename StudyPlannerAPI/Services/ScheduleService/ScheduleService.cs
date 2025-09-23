@@ -145,29 +145,21 @@ namespace StudyPlannerAPI.Services.ScheduleService
             }
 
             // Lấy account
-            var studentAccount = await _accountManagementRepository
+            var studentOfParent = await _accountManagementRepository
                 .GetAllAccount()
-                .FirstOrDefaultAsync(x => x.UserName == studentId);
+                .FirstOrDefaultAsync(x => x.ParentEmail == studentId);
 
-            if (studentAccount == null)
+            if (studentOfParent == null)
             {
-                return new ServiceResponse<List<ScheduleResponseDTO>>(false, "Không tìm thấy sinh viên");
+                return new ServiceResponse<List<ScheduleResponseDTO>>(false, "Không tìm thấy học sinh");
             }
 
-            // Nếu là phụ huynh thì tìm học sinh con
-            string targetStudentId = studentAccount.ParentEmail == null
-                ? await _accountManagementRepository
-                    .GetAllAccount()
-                    .Where(x => x.ParentEmail == studentAccount.Email)
-                    .Select(x => x.UserName)
-                    .FirstOrDefaultAsync() ?? studentId
-                : studentId;
-
+      
             // Query lịch
             var schedules =  _scheduleRepository.GetAllSchedulesAsync(); // giả sử trả IQueryable<Schedule>
 
             var filteredSchedules =  schedules
-                .Where(s => s.StudentId == studentId || s.StudentId == targetStudentId)
+                .Where(s => s.StudentId == studentId || s.StudentId == studentOfParent.UserName)
                 .Select(x => new ScheduleResponseDTO
                 {
                     ScheduleId = x.ScheduleId,

@@ -8,21 +8,28 @@ using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Permision;
 using StudyPlannerAPI.Permission;
 using StudyPlannerAPI.Repositories.AccountManagementRepository;
+using StudyPlannerAPI.Repositories.AssignmentDetailRepository;
+using StudyPlannerAPI.Repositories.AssignmentRepository;
 using StudyPlannerAPI.Repositories.ClassRepository;
 using StudyPlannerAPI.Repositories.FunctionRepository;
 using StudyPlannerAPI.Repositories.GroupFunctionRepository;
 using StudyPlannerAPI.Repositories.GroupManagementRepository;
+using StudyPlannerAPI.Repositories.ReminderRepository;
 using StudyPlannerAPI.Repositories.ScheduleRepository;
 using StudyPlannerAPI.Repositories.StudentClassRepository;
 using StudyPlannerAPI.Repositories.TeacherClassRepository;
 using StudyPlannerAPI.Services.AccountManagementService;
+using StudyPlannerAPI.Services.AssignmentDetailService;
+using StudyPlannerAPI.Services.AssignmentService;
 using StudyPlannerAPI.Services.ClassService;
+using StudyPlannerAPI.Services.CloudinaryService;
 using StudyPlannerAPI.Services.EmailService;
 using StudyPlannerAPI.Services.FunctionService;
 using StudyPlannerAPI.Services.GroupFunctionService;
 using StudyPlannerAPI.Services.GroupManagementService;
 using StudyPlannerAPI.Services.JWTService;
 using StudyPlannerAPI.Services.LoginService;
+using StudyPlannerAPI.Services.ReminderService;
 using StudyPlannerAPI.Services.ScheduleService;
 using StudyPlannerAPI.Services.StudentClassService;
 using StudyPlannerAPI.Services.TeacherClassService;
@@ -31,13 +38,13 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Thêm đoạn này để Render biết dùng PORT nó cấp
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+//// Thêm đoạn này để Render biết dùng PORT nó cấp
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(int.Parse(port)); // lắng nghe trên PORT mà Render cấp
-});
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    options.ListenAnyIP(int.Parse(port)); // lắng nghe trên PORT mà Render cấp
+//});
 
 
 // Add services to the container.
@@ -63,6 +70,10 @@ builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IStudentClassRepository, StudentClassRepository>();
 builder.Services.AddScoped<ITeacherClassRepository, TeacherClassRepository>();
+builder.Services.AddScoped<IReminderRepository, ReminderRepository>();
+builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+builder.Services.AddScoped<IAssignmentDetailRepository, AssignmentDetailRepository>();
+
 //Add service
 builder.Services.AddScoped<IJWTService, JWTService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
@@ -74,7 +85,10 @@ builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<IClassService,ClassService>();
 builder.Services.AddScoped<IStudentClassService,StudentClassService>();
 builder.Services.AddScoped<ITeacherClassService, TeacherClassService>();
-
+builder.Services.AddScoped<IReminderService, ReminderService>();
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.AddScoped<IAssignmentService,  AssignmentService>();
+builder.Services.AddScoped<IAssignmentDetailService, AssignmentDetailService>();
 // Đăng ký IHttpContextAccessor để thực hiện sử dụng HttpCookie
 builder.Services.AddHttpContextAccessor();
 
@@ -163,7 +177,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
         Version = "v1",
-        Title = "Chrome API",
+        Title = "StudyPlanner API",
         Description = "API documentation for Chrome"
     });
 

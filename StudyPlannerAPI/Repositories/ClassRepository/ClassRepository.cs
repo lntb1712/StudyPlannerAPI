@@ -36,9 +36,9 @@ namespace StudyPlannerAPI.Repositories.ClassRepository
             return _context.Classes
                            .Include(c=>c.StudentClasses)
                            .Include(c=>c.TeacherClasses)
-                           .Where(c => (c.ClassName != null && c.ClassName.Contains(textToSearch)) ||
-                                       (c.StudentClasses != null && c.StudentClasses.Any(sc => sc.Student != null && sc.Student.FullName != null && sc.Student.FullName.Contains(textToSearch))) ||
-                                       (c.TeacherClasses != null && c.TeacherClasses.Any(tc => tc.Teacher != null && tc.Teacher.FullName != null && tc.Teacher.FullName.Contains(textToSearch))))
+                           .Where(c => (c.ClassName != null && c.ClassName.Contains(textToSearch)) || (c.ClassId != null && c.ClassId.Contains(textToSearch))||
+                                       (c.StudentClasses != null && c.StudentClasses.Any(sc => sc.Student != null && sc.Student.FullName != null && sc.Student.UserName.Contains(textToSearch))) ||
+                                       (c.TeacherClasses != null && c.TeacherClasses.Any(tc => tc.Teacher != null && tc.Teacher.FullName != null && tc.Teacher.UserName.Contains(textToSearch))))
                            .AsQueryable();
         }
     }

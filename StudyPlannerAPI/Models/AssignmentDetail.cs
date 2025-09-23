@@ -15,6 +15,8 @@ public partial class AssignmentDetail
 
     public double? Grade { get; set; }
 
+    public string? FilePath { get; set; }
+
     public virtual Assignment Assignment { get; set; } = null!;
 
     public virtual StatusMaster? Status { get; set; }
