@@ -33,10 +33,6 @@ namespace StudyPlannerAPI.Services.ReminderService
                .GetAllAccount()
                .FirstOrDefaultAsync(x => x.ParentEmail == reminderRequest.ParentId);
 
-            if (studentOfParent == null)
-            {
-                return new ServiceResponse<bool>(false, "Không tìm thấy học sinh");
-            }
             string[] formats = {
                 "M/d/yyyy h:mm:ss tt",
                 "MM/dd/yyyy hh:mm:ss tt",
@@ -50,7 +46,7 @@ namespace StudyPlannerAPI.Services.ReminderService
             var reminder = new Reminder
             {
                 ParentId = reminderRequest.ParentId,
-                StudentId = studentOfParent.UserName,
+                StudentId = studentOfParent!.UserName,
                 Content = reminderRequest.Content,
                 DueDate = parseDueDate,
                 StatusId = 1,
@@ -171,12 +167,8 @@ namespace StudyPlannerAPI.Services.ReminderService
               .GetAllAccount()
               .FirstOrDefaultAsync(x => x.ParentEmail == userName);
 
-            if (studentOfParent == null)
-            {
-                return new ServiceResponse<List<ReminderResponseDTO>>(false, "Không tìm thấy học sinh");
-            }
             var query = _reminderRepository.GetAllReminderAsync();
-            var response = query.Where(x => x.ParentId == userName || x.StudentId == studentOfParent.UserName)
+            var response = query.Where(x => x.ParentId == userName || x.StudentId == studentOfParent!.UserName)
                                 .OrderBy(x => x.StatusId)
                                 .Select(x => new ReminderResponseDTO
                                 {
@@ -210,10 +202,6 @@ namespace StudyPlannerAPI.Services.ReminderService
                .GetAllAccount()
                .FirstOrDefaultAsync(x => x.ParentEmail == reminderRequest.ParentId);
 
-            if (studentOfParent == null)
-            {
-                return new ServiceResponse<bool>(false, "Không tìm thấy học sinh");
-            }
             string[] formats = {
                 "M/d/yyyy h:mm:ss tt",
                 "MM/dd/yyyy hh:mm:ss tt",

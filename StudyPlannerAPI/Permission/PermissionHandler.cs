@@ -43,7 +43,7 @@ namespace StudyPlannerAPI.Permission
             // Check permission theo mapping
             foreach (var permId in permissionIds)
             {
-                if (PermissionToApiPatternMap.TryGetValue(permId, out var pattern) &&
+                if (PermissionToApiPatternMap.TryGetValue(permId!, out var pattern) &&
                     Regex.IsMatch(requestedPath, pattern, RegexOptions.IgnoreCase))
                 {
                     context.Succeed(requirement);

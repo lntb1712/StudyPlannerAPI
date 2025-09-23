@@ -33,7 +33,7 @@ namespace StudyPlannerAPI.Services.AccountManagementService
                 UserName = account.UserName,
                 Password = BCrypt.Net.BCrypt.HashPassword(account.Password, 12),
                 FullName = account.FullName,
-                Email = account.Email,
+                Email = account.Email!,
                 ParentEmail = account.ParentEmail,
                 GroupId = account.GroupId,
                 CreatedAt = DateTime.Now
@@ -256,7 +256,7 @@ namespace StudyPlannerAPI.Services.AccountManagementService
                     }
                     existingAccount.FullName = account.FullName;
                     existingAccount.GroupId = account.GroupId;
-                    existingAccount.Email = account.Email;
+                    existingAccount.Email = account.Email!;
                     existingAccount.ParentEmail = account.ParentEmail;
 
                     await _context.SaveChangesAsync();

@@ -5,7 +5,7 @@
         public string GroupId { get; set; } = null!;
 
         public string FunctionId { get; set; } = null!;
-        public string FunctionName { get; set; }
+        public string? FunctionName { get; set; }
 
         public bool? IsEnable { get; set; }
 
