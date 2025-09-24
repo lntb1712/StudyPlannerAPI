@@ -24,7 +24,7 @@ namespace StudyPlannerAPI.Services.ReminderService
 
         public async Task<ServiceResponse<bool>> AddReminder(ReminderRequestDTO reminderRequest)
         {
-            if (string.IsNullOrEmpty(reminderRequest.ParentId) || string.IsNullOrEmpty(reminderRequest.StudentId) || reminderRequest == null)
+            if (string.IsNullOrEmpty(reminderRequest.ParentId)  || reminderRequest == null)
             {
                 return new ServiceResponse<bool>(false, "Dữ liệu nhận vào không hợp lệ");
             }
