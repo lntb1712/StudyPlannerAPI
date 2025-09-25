@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StudyPlannerAPI.DTOs.AssignmentDetailDTO;
 using StudyPlannerAPI.Services.AssignmentDetailService;
@@ -7,6 +9,8 @@ namespace StudyPlannerAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "PermissionPolicy")]
+    [EnableCors("MyCors")]
     public class AssignmentDetailController : ControllerBase
     {
         private readonly IAssignmentDetailService _assignmentDetailService;
@@ -105,7 +109,8 @@ namespace StudyPlannerAPI.Controllers
         }
 
         [HttpPut("UpdateAssignmentDetail")]
-        public async Task<IActionResult> UpdateAssignmentDetail([FromBody] AssignmentDetailRequestDTO assignmentDetailRequestDTO)
+        [Consumes("multipart/form-data")] // 👈 bắt buộc
+        public async Task<IActionResult> UpdateAssignmentDetail([FromForm] AssignmentDetailRequestDTO assignmentDetailRequestDTO)
         {
             try
             {

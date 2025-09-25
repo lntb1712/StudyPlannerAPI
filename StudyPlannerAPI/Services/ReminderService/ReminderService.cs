@@ -168,7 +168,8 @@ namespace StudyPlannerAPI.Services.ReminderService
               .FirstOrDefaultAsync(x => x.ParentEmail == userName);
 
             var query = _reminderRepository.GetAllReminderAsync();
-            var response = query.Where(x => x.ParentId == userName || x.StudentId == studentOfParent!.UserName)
+            var response = query.Where(x => x.ParentId == userName || x.StudentId == (studentOfParent==null?userName: studentOfParent.UserName))
+
                                 .OrderBy(x => x.StatusId)
                                 .Select(x => new ReminderResponseDTO
                                 {
@@ -188,7 +189,7 @@ namespace StudyPlannerAPI.Services.ReminderService
 
         public async Task<ServiceResponse<bool>> UpdateReminder(ReminderRequestDTO reminderRequest)
         {
-            if (string.IsNullOrEmpty(reminderRequest.ParentId) || string.IsNullOrEmpty(reminderRequest.StudentId) || reminderRequest == null)
+            if (reminderRequest == null)
             {
                 return new ServiceResponse<bool>(false, "Dữ liệu nhận vào không hợp lệ");
             }

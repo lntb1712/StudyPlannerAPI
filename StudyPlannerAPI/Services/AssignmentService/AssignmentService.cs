@@ -152,11 +152,11 @@ namespace StudyPlannerAPI.Services.AssignmentService
                                     AssignmentId = d.AssignmentId,
                                     StudentId = d.StudentId,
                                     StudentName = d.Student.FullName, // join sang bảng Student
-                                    FilePath = d.FilePath,
+                                    FilePath = d.FilePath??"",
                                     StatusId = d.StatusId,
                                     StatusName = d.Status!.StatusName, // join sang bảng Status
                                     SubmittedAt = d.SubmittedAt.HasValue ? d.SubmittedAt.Value.ToString("dd/MM/yyy HH:mm:ss") : null,
-                                    Grade = d.Grade
+                                    Grade = d.Grade??0
                                 }).ToList()
                             }).ToList();
             return new ServiceResponse<List<AssignmentResponseDTO>>(true, "Lấy danh sách theo lớp thành công", response);
@@ -190,11 +190,11 @@ namespace StudyPlannerAPI.Services.AssignmentService
                                     AssignmentId = d.AssignmentId,
                                     StudentId = d.StudentId,
                                     StudentName = d.Student.FullName, // join sang bảng Student
-                                    FilePath = d.FilePath,
+                                    FilePath = d.FilePath ?? "",
                                     StatusId = d.StatusId,
                                     StatusName = d.Status!.StatusName, // join sang bảng Status
                                     SubmittedAt = d.SubmittedAt.HasValue ? d.SubmittedAt.Value.ToString("dd/MM/yyy HH:mm:ss") : null,
-                                    Grade = d.Grade
+                                    Grade = d.Grade ?? 0
                                 }).ToList()
                             }).ToList();
             return new ServiceResponse<List<AssignmentResponseDTO>>(true, "Lấy danh sách theo giáo viên thành công", response);

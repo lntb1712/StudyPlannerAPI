@@ -108,6 +108,29 @@ namespace StudyPlannerAPI.Services.TeacherClassService
             }
         }
 
+        public async Task<ServiceResponse<List<TeacherClassResponseDTO>>> GetClassByTeacherID(string teacherId)
+        {
+            if (string.IsNullOrEmpty(teacherId))
+            {
+                return new ServiceResponse<List<TeacherClassResponseDTO>>(false, "Mã giáo viên không được để trống");
+            }
+            var query = _teacherClassRepository.GetAllTeacherClass();
+            if (query == null)
+            {
+                return new ServiceResponse<List<TeacherClassResponseDTO>>(false, "Phân công không tồn tại");
+            }
+            var response = query.Where(x => x.TeacherId == teacherId)
+                                 .Select(x => new TeacherClassResponseDTO
+                                 {
+                                     ClassId = x.ClassId,
+                                     Subject = x.Subject,
+                                     TeacherId = x.TeacherId,
+                                     TeacherName = x.Teacher.FullName!
+                                 }).ToList();
+
+            return new ServiceResponse<List<TeacherClassResponseDTO>>(true, "Lấy thông tin phân công thành công", response);
+        }
+
         public async Task<ServiceResponse<List<TeacherClassResponseDTO>>> GetTeacherByClassID(string classId)
         {
             if (string.IsNullOrEmpty(classId) )

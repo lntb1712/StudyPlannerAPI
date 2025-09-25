@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StudyPlannerAPI.DTOs;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Permision;
 using StudyPlannerAPI.Permission;
@@ -38,13 +39,13 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//// Thêm đoạn này để Render biết dùng PORT nó cấp
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+////// Thêm đoạn này để Render biết dùng PORT nó cấp
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(int.Parse(port)); // lắng nghe trên PORT mà Render cấp
-});
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    options.ListenAnyIP(int.Parse(port)); // lắng nghe trên PORT mà Render cấp
+//});
 
 
 // Add services to the container.
@@ -58,6 +59,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? Environment.GetEnvironmentVariable("DB_CONNECTION");
 builder.Services.AddDbContext<StudyPlannerContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings"));
+
 // Thiết lập Redis Cache (IDistributedCache)
 builder.Services.AddMemoryCache();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));

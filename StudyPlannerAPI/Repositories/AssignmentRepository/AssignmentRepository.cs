@@ -17,6 +17,9 @@ namespace StudyPlannerAPI.Repositories.AssignmentRepository
         {
             return _context.Assignments
                            .Include(x => x.AssignmentDetails)
+                           .ThenInclude(x=>x.Student)
+                           .Include(x => x.AssignmentDetails)
+                           .ThenInclude(x => x.Status)
                            .Include(x => x.Class)
                            .Include(x => x.Teacher)
                            .AsQueryable();
