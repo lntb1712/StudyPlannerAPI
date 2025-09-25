@@ -59,11 +59,23 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? Environment.GetEnvironmentVariable("DB_CONNECTION");
 builder.Services.AddDbContext<StudyPlannerContext>(options =>
     options.UseSqlServer(connectionString));
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-// Override with env vars in EmailService constructor if needed, e.g.:
-var emailSettings = builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>();
-emailSettings!.SenderEmail ??= Environment.GetEnvironmentVariable("EmailSettings__SenderEmail")!;
-emailSettings.SenderPassword ??= Environment.GetEnvironmentVariable("EmailSettings__SenderPassword")!;
+//// Load Email Settings
+//builder.Services.Configure<EmailSettings>(options =>
+//{
+//    options.SmtpServer = builder.Configuration["EmailSettings:SmtpServer"]
+//        ?? Environment.GetEnvironmentVariable("EmailSettings__SmtpServer") ?? "smtp.gmail.com";
+
+//    options.SmtpPort = int.TryParse(
+//        builder.Configuration["EmailSettings:SmtpPort"]
+//        ?? Environment.GetEnvironmentVariable("EmailSettings__SmtpPort"), out var port) ? port : 587;
+
+//    options.SenderEmail = builder.Configuration["EmailSettings:SenderEmail"]!
+//        ?? Environment.GetEnvironmentVariable("EmailSettings__SenderEmail")!;
+
+//    options.SenderPassword = builder.Configuration["EmailSettings:SenderPassword"]!
+//        ?? Environment.GetEnvironmentVariable("EmailSettings__SenderPassword")!;
+//});
+
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("CloudinarySettings"));
 var CloudinarySettings = builder.Configuration.GetSection("CloudinarySettings").Get<CloudinarySettings>();
@@ -74,7 +86,6 @@ CloudinarySettings!.ApiSecret = Environment.GetEnvironmentVariable("CloudinarySe
 
 // Thiết lập Redis Cache (IDistributedCache)
 builder.Services.AddMemoryCache();
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAccountManagementRepository, AccountManagementRepository>();
 builder.Services.AddScoped<IGroupFunctionRepository, GroupFunctionRepository>();

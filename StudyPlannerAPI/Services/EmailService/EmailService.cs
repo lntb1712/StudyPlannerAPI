@@ -1,57 +1,41 @@
-﻿using MailKit.Net.Smtp;
-using MailKit.Security;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using MimeKit;
+﻿using SendGrid;
+using SendGrid.Helpers.Mail;
 using StudyPlannerAPI.DTO;
-using StudyPlannerAPI.Services.EmailService;
 
 namespace StudyPlannerAPI.Services.EmailService
 {
-    public class EmailSettings
-    {
-        public string SmtpServer { get; set; } = string.Empty;
-        public int SmtpPort { get; set; }
-        public string SenderEmail { get; set; } = string.Empty;
-        public string SenderPassword { get; set; } = string.Empty;
-    }
-
     public class EmailService : IEmailService
     {
-        private readonly EmailSettings _emailSettings;
+        private readonly string _apiKey;
 
-        public EmailService(IOptions<EmailSettings> emailSettings)
+        public EmailService(IConfiguration config)
         {
-            _emailSettings = emailSettings.Value;
+            _apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY")
+                      ?? config["SendGrid:ApiKey"]!;
         }
 
         public async Task<ServiceResponse<bool>> SendOTPAsync(string toEmail, string otpCode, string userName = "Người dùng")
         {
             try
             {
-                var message = new MimeMessage();
-                message.From.Add(new MailboxAddress("Study Planner", _emailSettings.SenderEmail));
-                message.To.Add(new MailboxAddress(userName, toEmail));
-                message.Subject = "Mã xác thực tạo tài khoản - Study Planner";
+                var client = new SendGridClient(_apiKey);
+                var from = new EmailAddress("support@studyplanner.com", "Study Planner");
+                var subject = "Mã xác thực tạo tài khoản - Study Planner";
+                var to = new EmailAddress(toEmail, userName);
 
-                var bodyBuilder = new BodyBuilder();
-                bodyBuilder.HtmlBody = $@"
+                var htmlContent = $@"
                     <h2>Xin chào {userName},</h2>
-                    <p>Mã xác thực để tạo tài khoản phụ huynh của bạn là: <strong style='font-size: 24px; color: #3b82f6;'>{otpCode}</strong></p>
-                    <p>Mã này có hiệu lực trong 5 phút. Nếu bạn không yêu cầu, vui lòng bỏ qua email này.</p>
-                    <p>Trân trọng,<br>Đội ngũ Study Planner</p>
-                    <hr>
-                    <small>Nếu bạn gặp vấn đề, liên hệ support@studyplanner.com</small>";
+                    <p>Mã xác thực để tạo tài khoản phụ huynh của bạn là:
+                    <strong style='font-size: 24px; color: #3b82f6;'>{otpCode}</strong></p>
+                    <p>Mã này có hiệu lực trong 5 phút.</p>";
 
-                message.Body = bodyBuilder.ToMessageBody();
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, null, htmlContent);
+                var response = await client.SendEmailAsync(msg);
 
-                using var client = new SmtpClient();
-                await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
-                await client.AuthenticateAsync(_emailSettings.SenderEmail, _emailSettings.SenderPassword);
-                await client.SendAsync(message);
-                await client.DisconnectAsync(true);
-
-                return new ServiceResponse<bool>(true, "Gửi mã OTP thành công");
+                return new ServiceResponse<bool>(
+                    response.IsSuccessStatusCode,
+                    response.IsSuccessStatusCode ? "Gửi email thành công" : "Gửi email thất bại"
+                );
             }
             catch (Exception ex)
             {
