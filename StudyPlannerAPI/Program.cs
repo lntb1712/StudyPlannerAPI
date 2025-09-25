@@ -40,12 +40,12 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 ////// Thêm đoạn này để Render biết dùng PORT nó cấp
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(int.Parse(port)); // lắng nghe trên PORT mà Render cấp
-});
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    options.ListenAnyIP(int.Parse(port)); // lắng nghe trên PORT mà Render cấp
+//});
 
 
 // Add services to the container.
@@ -59,8 +59,18 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? Environment.GetEnvironmentVariable("DB_CONNECTION");
 builder.Services.AddDbContext<StudyPlannerContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+// Override with env vars in EmailService constructor if needed, e.g.:
+var emailSettings = builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>();
+emailSettings!.SenderEmail ??= Environment.GetEnvironmentVariable("EmailSettings__SenderEmail")!;
+emailSettings.SenderPassword ??= Environment.GetEnvironmentVariable("EmailSettings__SenderPassword")!;
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("CloudinarySettings"));
+var CloudinarySettings = builder.Configuration.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+CloudinarySettings!.CloudName = Environment.GetEnvironmentVariable("CloudinarySettings__CloudName")!;
+CloudinarySettings!.ApiKey = Environment.GetEnvironmentVariable("CloudinarySettings__ApiKey")!;
+CloudinarySettings!.ApiSecret = Environment.GetEnvironmentVariable("CloudinarySettings__ApiSecret")!;
+
 
 // Thiết lập Redis Cache (IDistributedCache)
 builder.Services.AddMemoryCache();
