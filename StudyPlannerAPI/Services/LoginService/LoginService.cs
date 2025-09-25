@@ -97,7 +97,7 @@ namespace StudyPlannerAPI.Services.LoginService
             }
 
             var existingAccount = await _accountManagementRepository.GetAllAccount()
-                .FirstOrDefaultAsync(x => x.Email == email || x.ParentEmail == email);
+                .FirstOrDefaultAsync(x => x.Email == email);
             if (existingAccount != null)
             {
                 return new ServiceResponse<bool>(false, "Email đã được sử dụng cho tài khoản khác");
