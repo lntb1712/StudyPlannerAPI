@@ -5,7 +5,7 @@ namespace StudyPlannerAPI.Services.AssignmentService
 {
     public interface IAssignmentService
     {
-        Task<ServiceResponse<List<AssignmentResponseDTO>>> GetAllAssignmentByTeacherAsync(string teacherId);
+        Task<ServiceResponse<List<AssignmentResponseDTO>>> GetAllAssignmentByTeacherAsync(string teacherId, string classId);
         Task<ServiceResponse<List<AssignmentResponseDTO>>> GetAllAssignmentByClassAsync(string classId);
         Task<ServiceResponse<bool>> AddAssignment(AssignmentRequestDTO assignmentRequest);
         Task<ServiceResponse<bool>> DeleteAssignment(int assignmentRequest);

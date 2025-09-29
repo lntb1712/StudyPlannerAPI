@@ -163,7 +163,7 @@ namespace StudyPlannerAPI.Services.AssignmentService
                  
         }
 
-        public async Task<ServiceResponse<List<AssignmentResponseDTO>>> GetAllAssignmentByTeacherAsync(string teacherId)
+        public async Task<ServiceResponse<List<AssignmentResponseDTO>>> GetAllAssignmentByTeacherAsync(string teacherId, string classId)
         {
 
             if (string.IsNullOrEmpty(teacherId))
@@ -171,7 +171,7 @@ namespace StudyPlannerAPI.Services.AssignmentService
                 return new ServiceResponse<List<AssignmentResponseDTO>>(false, "Mã giáo viên không được để trống");
             }
             var query = _assignmentRepository.GetAllAssignments();
-            var response = query.Where(a => a.TeacherId == teacherId)
+            var response = query.Where(a => a.TeacherId == teacherId && a.ClassId == classId)
                             .Select(a => new AssignmentResponseDTO
                             {
                                 AssignmentId = a.AssignmentId,
