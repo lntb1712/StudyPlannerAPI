@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StudyPlannerAPI.DTOs;
+using StudyPlannerAPI.Hubs;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Permision;
 using StudyPlannerAPI.Permission;
@@ -15,9 +16,11 @@ using StudyPlannerAPI.Repositories.ClassRepository;
 using StudyPlannerAPI.Repositories.FunctionRepository;
 using StudyPlannerAPI.Repositories.GroupFunctionRepository;
 using StudyPlannerAPI.Repositories.GroupManagementRepository;
+using StudyPlannerAPI.Repositories.NotificationRepository;
 using StudyPlannerAPI.Repositories.ReminderRepository;
 using StudyPlannerAPI.Repositories.ScheduleRepository;
 using StudyPlannerAPI.Repositories.StudentClassRepository;
+using StudyPlannerAPI.Repositories.TaskManagementRepository;
 using StudyPlannerAPI.Repositories.TeacherClassRepository;
 using StudyPlannerAPI.Services.AccountManagementService;
 using StudyPlannerAPI.Services.AssignmentDetailService;
@@ -30,9 +33,12 @@ using StudyPlannerAPI.Services.GroupFunctionService;
 using StudyPlannerAPI.Services.GroupManagementService;
 using StudyPlannerAPI.Services.JWTService;
 using StudyPlannerAPI.Services.LoginService;
+using StudyPlannerAPI.Services.MonitorService;
+using StudyPlannerAPI.Services.NotificationService;
 using StudyPlannerAPI.Services.ReminderService;
 using StudyPlannerAPI.Services.ScheduleService;
 using StudyPlannerAPI.Services.StudentClassService;
+using StudyPlannerAPI.Services.TaskManagementService;
 using StudyPlannerAPI.Services.TeacherClassService;
 using System.Text;
 
@@ -83,6 +89,8 @@ CloudinarySettings!.CloudName = Environment.GetEnvironmentVariable("CloudinarySe
 CloudinarySettings!.ApiKey = Environment.GetEnvironmentVariable("CloudinarySettings__ApiKey")!;
 CloudinarySettings!.ApiSecret = Environment.GetEnvironmentVariable("CloudinarySettings__ApiSecret")!;
 
+// Add SignalR
+builder.Services.AddSignalR();
 
 // Thiết lập Redis Cache (IDistributedCache)
 builder.Services.AddMemoryCache();
@@ -98,6 +106,8 @@ builder.Services.AddScoped<ITeacherClassRepository, TeacherClassRepository>();
 builder.Services.AddScoped<IReminderRepository, ReminderRepository>();
 builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<IAssignmentDetailRepository, AssignmentDetailRepository>();
+builder.Services.AddScoped<ITaskManagementRepository,TaskManagementRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 //Add service
 builder.Services.AddScoped<IJWTService, JWTService>();
@@ -114,8 +124,16 @@ builder.Services.AddScoped<IReminderService, ReminderService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddScoped<IAssignmentService,  AssignmentService>();
 builder.Services.AddScoped<IAssignmentDetailService, AssignmentDetailService>();
+builder.Services.AddScoped<ITaskManagementService,TaskManagementService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+
+//Add Monitor service
+builder.Services.AddHostedService<ScheduleMonitorService>();
 // Đăng ký IHttpContextAccessor để thực hiện sử dụng HttpCookie
 builder.Services.AddHttpContextAccessor();
+
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -251,5 +269,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Map hub
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();
