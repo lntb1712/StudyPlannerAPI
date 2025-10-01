@@ -155,7 +155,7 @@ namespace StudyPlannerAPI.Services.ScheduleService
             var schedules =  _scheduleRepository.GetAllSchedulesAsync(); // giả sử trả IQueryable<Schedule>
 
             var filteredSchedules =  schedules
-                .Where(s => s.StudentId == studentId || s.StudentId == studentOfParent!.UserName)
+                .Where(s => s.StudentId == studentId || s.StudentId == ((studentOfParent?.UserName) ?? ""))
                 .Select(x => new ScheduleResponseDTO
                 {
                     ScheduleId = x.ScheduleId,

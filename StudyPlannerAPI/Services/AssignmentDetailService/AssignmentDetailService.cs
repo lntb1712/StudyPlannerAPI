@@ -3,6 +3,7 @@ using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.AssignmentDetailDTO;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.AssignmentDetailRepository;
+using StudyPlannerAPI.Repositories.AssignmentRepository;
 using StudyPlannerAPI.Services.CloudinaryService;
 using System.Globalization;
 
@@ -58,7 +59,7 @@ namespace StudyPlannerAPI.Services.AssignmentDetailService
             var entity = await _assignmentDetailRepository.GetAssignmentDetailByStudentAsync(assignmentId, studentId);
             if (entity == null)
             {
-                return new ServiceResponse<AssignmentDetailResponseDTO>(false, "Không tìm thấy bài nộp");
+                return new ServiceResponse<AssignmentDetailResponseDTO>(true, "Không tìm thấy bài nộp", new AssignmentDetailResponseDTO());
             }
 
             var response = new AssignmentDetailResponseDTO
@@ -123,7 +124,7 @@ namespace StudyPlannerAPI.Services.AssignmentDetailService
             {
                 AssignmentId = request.AssignmentId,
                 StudentId = request.StudentId,
-                StatusId = 1, // ví dụ mặc định trạng thái = đã nộp
+                StatusId = 3, // ví dụ mặc định trạng thái = đã nộp
                 FilePath = fileUrl,
                 SubmittedAt = DateTime.Now,
                 Grade = null

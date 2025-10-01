@@ -24,7 +24,7 @@ namespace StudyPlannerAPI.Controllers
         public async Task<IActionResult> GetAllAssignmentByTeacherAsync([FromQuery] string teacherId, [FromQuery] string classId)
         {
             try
-            {
+              {
                 var response = await _assignmentService.GetAllAssignmentByTeacherAsync(teacherId,classId);
                 if (!response.Success)
                 {
