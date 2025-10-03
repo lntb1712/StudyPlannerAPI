@@ -16,6 +16,7 @@ using StudyPlannerAPI.Repositories.ClassRepository;
 using StudyPlannerAPI.Repositories.FunctionRepository;
 using StudyPlannerAPI.Repositories.GroupFunctionRepository;
 using StudyPlannerAPI.Repositories.GroupManagementRepository;
+using StudyPlannerAPI.Repositories.MessagingRepository;
 using StudyPlannerAPI.Repositories.NotificationRepository;
 using StudyPlannerAPI.Repositories.ReminderRepository;
 using StudyPlannerAPI.Repositories.ScheduleRepository;
@@ -33,6 +34,7 @@ using StudyPlannerAPI.Services.GroupFunctionService;
 using StudyPlannerAPI.Services.GroupManagementService;
 using StudyPlannerAPI.Services.JWTService;
 using StudyPlannerAPI.Services.LoginService;
+using StudyPlannerAPI.Services.MessagingService;
 using StudyPlannerAPI.Services.MonitorService;
 using StudyPlannerAPI.Services.NotificationService;
 using StudyPlannerAPI.Services.ReminderService;
@@ -108,6 +110,7 @@ builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<IAssignmentDetailRepository, AssignmentDetailRepository>();
 builder.Services.AddScoped<ITaskManagementRepository,TaskManagementRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IMessagingRepository, MessagingRepository>();
 
 //Add service
 builder.Services.AddScoped<IJWTService, JWTService>();
@@ -126,10 +129,12 @@ builder.Services.AddScoped<IAssignmentService,  AssignmentService>();
 builder.Services.AddScoped<IAssignmentDetailService, AssignmentDetailService>();
 builder.Services.AddScoped<ITaskManagementService,TaskManagementService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IMessagingService, MessagingService>();
 
 
 //Add Monitor service
 builder.Services.AddHostedService<ScheduleMonitorService>();
+builder.Services.AddHostedService<ReminderMonitorService>();
 // Đăng ký IHttpContextAccessor để thực hiện sử dụng HttpCookie
 builder.Services.AddHttpContextAccessor();
 

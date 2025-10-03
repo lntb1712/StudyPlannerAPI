@@ -48,6 +48,8 @@ namespace StudyPlannerAPI.Services.NotificationService
                     // 🔥 Push realtime đến client ngay sau khi lưu DB
                     await _hubContext.Clients.User(notification.UserName!)
                         .SendAsync("ReceiveNotification", notification.Title, notification.Content);
+                    await _hubContext.Clients.User(notification.UserName!)
+                        .SendAsync("ReceiveReminderNotification", notification.Title, notification.Content);
                     await transaction.CommitAsync();
                     return new ServiceResponse<bool>(true, "Thêm thông báo thành công");
                 }
@@ -139,7 +141,7 @@ namespace StudyPlannerAPI.Services.NotificationService
                                     IsRead = x.IsRead,
                                     Type = x.Type,
                                     CreatedAt = x.CreatedAt!.Value.ToString("dd/MM/yyyy HH:mm:ss")
-                                }).ToList();
+                                }).OrderBy(x=>x.IsRead).ToList();
             return new ServiceResponse<List<NotificationResponseDTO>>(true, "Lấy danh sách thông báo thành công",response);
 
         }

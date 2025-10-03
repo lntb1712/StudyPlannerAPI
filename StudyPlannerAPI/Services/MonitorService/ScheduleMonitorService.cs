@@ -55,7 +55,7 @@ namespace StudyPlannerAPI.Services.MonitorService
                                 UserName = s.StudentId,
                                 Title = "Lịch học trễ",
                                 Content = $"Môn {s.Subject} đã bắt đầu lúc {s.StartTime:HH:mm}",
-                                Type = "Warning",
+                                Type = "Cảnh báo",
                                 IsRead = false,
                                 CreatedAt = DateTime.Now
                             };

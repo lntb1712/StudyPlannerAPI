@@ -38,7 +38,7 @@ namespace StudyPlannerAPI.Controllers
         }
 
         [HttpPost("AddNotification")]
-        public async Task<IActionResult> AddNotification([FromQuery] NotificationRequestDTO notification)
+        public async Task<IActionResult> AddNotification([FromBody] NotificationRequestDTO notification)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace StudyPlannerAPI.Controllers
             }
         }
         [HttpPut("UpdateNotification")]
-        public async Task<IActionResult> UpdateNotification([FromQuery] NotificationRequestDTO notification)
+        public async Task<IActionResult> UpdateNotification([FromBody] NotificationRequestDTO notification)
         {
             try
             {
