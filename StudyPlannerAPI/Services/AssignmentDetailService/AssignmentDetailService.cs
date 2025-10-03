@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.AssignmentDetailDTO;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.AssignmentDetailRepository;
 using StudyPlannerAPI.Repositories.AssignmentRepository;
@@ -126,7 +127,7 @@ namespace StudyPlannerAPI.Services.AssignmentDetailService
                 StudentId = request.StudentId,
                 StatusId = 3, // ví dụ mặc định trạng thái = đã nộp
                 FilePath = fileUrl,
-                SubmittedAt = DateTime.Now,
+                SubmittedAt = HelperTime.NowVN(),
                 Grade = null
             };
 

@@ -1,5 +1,6 @@
 ﻿using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.DashboardDTO;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Repositories.AccountManagementRepository;
 using StudyPlannerAPI.Repositories.ClassRepository;
 using StudyPlannerAPI.Repositories.GroupManagementRepository;
@@ -40,7 +41,7 @@ namespace StudyPlannerAPI.Services.DashboardService
             // Total Classes (async method, need await)
             dashboard.TotalClasses = ( _classRepo.GetAllClassesAsync()).Count();
 
-            var now = DateTime.Now;
+            var now = HelperTime.NowVN();
 
             // New accounts in current month
             var totalNewAccounts = _accountRepo.GetAllAccount()

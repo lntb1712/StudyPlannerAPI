@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.TaskManagementDTO;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.TaskManagementRepository;
 using System.Globalization;
@@ -41,8 +42,8 @@ namespace StudyPlannerAPI.Services.TaskManagementService
                 Description = taskManagementRequestDTO.Description,
                 DueDate = parseDueDate,
                 StatusId = 1,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
+                CreatedAt = HelperTime.NowVN(),
+                UpdatedAt = HelperTime.NowVN(),
 
             };
             using (var transaction = await _context.Database.BeginTransactionAsync())
@@ -178,7 +179,7 @@ namespace StudyPlannerAPI.Services.TaskManagementService
                         return new ServiceResponse<bool>(false, "Giờ hết hạn không đúng định dạng. Vui lòng sử dụng dd/MM/yyyy hoặc M/d/yyyy h:mm:ss tt.");
                     }
                     existingTask.DueDate = parseDueDate;
-                    existingTask.UpdatedAt = DateTime.Now;
+                    existingTask.UpdatedAt = HelperTime.NowVN();
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
                     return new ServiceResponse<bool>(true, "Cập nhật việc cần làm thành công");

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.NotificationDTO;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Hubs;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.NotificationRepository;
@@ -36,7 +37,7 @@ namespace StudyPlannerAPI.Services.NotificationService
                 Content = notification.Content,
                 Type = notification.Type,
                 IsRead = notification.IsRead,
-                CreatedAt = DateTime.Now
+                CreatedAt = HelperTime.NowVN()
             };
 
             using (var transaction = await _context.Database.BeginTransactionAsync())

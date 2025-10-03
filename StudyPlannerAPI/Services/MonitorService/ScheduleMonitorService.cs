@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Hubs;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.ScheduleRepository;
@@ -28,7 +29,7 @@ namespace StudyPlannerAPI.Services.MonitorService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("ScheduleMonitorService started at {Time}", DateTime.Now);
+            _logger.LogInformation("ScheduleMonitorService started at {Time}", HelperTime.NowVN());
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -42,10 +43,10 @@ namespace StudyPlannerAPI.Services.MonitorService
                         // ✅ Await query đúng cách (fix async bug từ trước)
                         var allSchedules = scheduleRepository.GetAllSchedulesAsync();
                         var schedules =  allSchedules
-                            .Where(s => s.StartTime <= DateTime.Now && (s.StatusId == 1 || s.StatusId == 2))
+                            .Where(s => s.StartTime <= HelperTime.NowVN() && (s.StatusId == 1 || s.StatusId == 2))
                             .ToList();  // Sử dụng ToListAsync() từ EF Core
 
-                        _logger.LogInformation("Found {Count} overdue schedules at {Time}", schedules.Count, DateTime.Now);
+                        _logger.LogInformation("Found {Count} overdue schedules at {Time}", schedules.Count, HelperTime.NowVN());
 
                         foreach (var s in schedules)
                         {
@@ -57,7 +58,7 @@ namespace StudyPlannerAPI.Services.MonitorService
                                 Content = $"Môn {s.Subject} đã bắt đầu lúc {s.StartTime:HH:mm}",
                                 Type = "Cảnh báo",
                                 IsRead = false,
-                                CreatedAt = DateTime.Now
+                                CreatedAt = HelperTime.NowVN()
                             };
                             db.Notifications.Add(notification);
 
@@ -82,7 +83,7 @@ namespace StudyPlannerAPI.Services.MonitorService
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Error in ScheduleMonitorService loop at {Time}", DateTime.Now);
+                        _logger.LogError(ex, "Error in ScheduleMonitorService loop at {Time}", HelperTime.NowVN());
                     }
                 }
 

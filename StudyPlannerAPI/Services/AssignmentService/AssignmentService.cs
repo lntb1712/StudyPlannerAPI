@@ -2,6 +2,7 @@
 using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.AssignmentDetailDTO;
 using StudyPlannerAPI.DTOs.AssignmentDTO;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.AssignmentRepository;
 using System.Globalization;
@@ -43,7 +44,7 @@ namespace StudyPlannerAPI.Services.AssignmentService
                 Title = assignmentRequest.Title,
                 Description = assignmentRequest.Description,
                 Deadline = parseDeadline,
-                CreatedAt = DateTime.Now,
+                CreatedAt = HelperTime.NowVN(),
 
             };
 

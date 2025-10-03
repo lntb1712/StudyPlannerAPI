@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Hubs;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.ReminderRepository;
@@ -21,7 +22,7 @@ namespace StudyPlannerAPI.Services.MonitorService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("ReminderMonitorService started at {Time}", DateTime.Now);
+            _logger.LogInformation("ReminderMonitorService started at {Time}", HelperTime.NowVN());
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -34,7 +35,7 @@ namespace StudyPlannerAPI.Services.MonitorService
 
                         var allReminder = reminderRepository.GetAllReminderAsync();
                         var reminders = allReminder
-                                        .Where(x => x.CreatedAt <= DateTime.Now && (x.StatusId == 1 || x.StatusId == 2))
+                                        .Where(x => x.CreatedAt <= HelperTime.NowVN() && (x.StatusId == 1 || x.StatusId == 2))
                                         .ToList();
 
                         foreach (var r in reminders)
@@ -46,7 +47,7 @@ namespace StudyPlannerAPI.Services.MonitorService
                                 Content = r.Content,
                                 Type = "Nhắc nhở",
                                 IsRead = false,
-                                CreatedAt = DateTime.Now,
+                                CreatedAt = HelperTime.NowVN(),
                             };
                             context.Notifications.Add(notification);
 
@@ -58,7 +59,7 @@ namespace StudyPlannerAPI.Services.MonitorService
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Có lỗi xảy ra {Time}", DateTime.Now);
+                        _logger.LogError(ex, "Có lỗi xảy ra {Time}", HelperTime.NowVN());
                     }
                 }
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);

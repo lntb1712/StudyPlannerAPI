@@ -2,6 +2,7 @@
 using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.AccountManagementDTO;
 using StudyPlannerAPI.DTOs.MessagingDTO;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.AccountManagementRepository;
 using StudyPlannerAPI.Repositories.MessagingRepository;
@@ -79,7 +80,7 @@ namespace StudyPlannerAPI.Services.MessagingService
                 ReceiverId = request.ReceiverId,
                 Content = request.Content,
                 IsRead = false,
-                CreatedAt = DateTime.Now
+                CreatedAt = HelperTime.NowVN()
             };
 
             try

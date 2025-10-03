@@ -2,6 +2,7 @@
 using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.ReminderDTO;
 using StudyPlannerAPI.DTOs.ScheduleDTO;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.AccountManagementRepository;
 using StudyPlannerAPI.Repositories.ReminderRepository;
@@ -51,7 +52,7 @@ namespace StudyPlannerAPI.Services.ReminderService
                 Content = reminderRequest.Content,
                 DueDate = parseDueDate,
                 StatusId = 1,
-                CreatedAt = DateTime.Now
+                CreatedAt = HelperTime.NowVN()
             };
 
             using (var transaction = await _context.Database.BeginTransactionAsync())

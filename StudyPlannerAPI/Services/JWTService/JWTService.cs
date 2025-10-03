@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using StudyPlannerAPI.DTOs;
 using StudyPlannerAPI.DTOs.GroupFunctionDTO;
+using StudyPlannerAPI.Helper;
 
 namespace StudyPlannerAPI.Services.JWTService
 {
@@ -43,7 +44,7 @@ namespace StudyPlannerAPI.Services.JWTService
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddHours(8), // Token sống 8 tiếng chẳng hạn
+                Expires = HelperTime.NowVN().AddHours(8), // Token sống 8 tiếng chẳng hạn
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey), SecurityAlgorithms.HmacSha256Signature)
             };
 

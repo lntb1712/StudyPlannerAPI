@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Hubs;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.AssignmentRepository;
@@ -21,7 +22,7 @@ namespace StudyPlannerAPI.Services.MonitorService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("AssignmentMonitorService started at {Time}", DateTime.Now);
+            _logger.LogInformation("AssignmentMonitorService started at {Time}", HelperTime.NowVN());
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -34,7 +35,7 @@ namespace StudyPlannerAPI.Services.MonitorService
 
                         var allAssignments = assignmentRepository.GetAllAssignments();
                         var overdueAssignments = allAssignments
-                            .Where(x => x.Deadline <= DateTime.Now)
+                            .Where(x => x.Deadline <= HelperTime.NowVN())
                             .ToList();
 
                         foreach (var assignment in overdueAssignments)
@@ -54,7 +55,7 @@ namespace StudyPlannerAPI.Services.MonitorService
                                     Content = $"Bài tập '{assignment.Title}' đã quá hạn. Vui lòng nộp ngay.",
                                     Type = "Bài tập quá hạn",
                                     IsRead = false,
-                                    CreatedAt = DateTime.Now,
+                                    CreatedAt = HelperTime.NowVN(),
                                 };
                                 var detail = assignment.AssignmentDetails.FirstOrDefault(x => x.StudentId == studentId);
                                 if (detail != null)
@@ -71,7 +72,7 @@ namespace StudyPlannerAPI.Services.MonitorService
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Có lỗi xảy ra {Time}", DateTime.Now);
+                        _logger.LogError(ex, "Có lỗi xảy ra {Time}", HelperTime.NowVN());
                     }
                 }
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);

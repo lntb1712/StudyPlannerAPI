@@ -3,6 +3,7 @@ using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.ScheduleDTO;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.AccountManagementRepository;
 using StudyPlannerAPI.Repositories.ScheduleRepository;
@@ -55,8 +56,8 @@ namespace StudyPlannerAPI.Services.ScheduleService
                 StartTime = parseStartTime,
                 EndTime = parseEndTime,
                 StatusId = scheduleRequest.StatusId,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
+                CreatedAt = HelperTime.NowVN(),
+                UpdatedAt = HelperTime.NowVN(),
 
             };
 
@@ -278,7 +279,7 @@ namespace StudyPlannerAPI.Services.ScheduleService
                     existingSchedule.StartTime = parseStartTime;
                     existingSchedule.EndTime = parseEndTime;
                     existingSchedule.StatusId = scheduleRequest.StatusId;
-                    existingSchedule.UpdatedAt = DateTime.Now;
+                    existingSchedule.UpdatedAt = HelperTime.NowVN();
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
                     return new ServiceResponse<bool>(true, "Cập nhật lịch thành công");

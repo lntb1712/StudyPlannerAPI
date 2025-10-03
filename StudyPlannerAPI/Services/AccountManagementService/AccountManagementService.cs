@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StudyPlannerAPI.DTO;
 using StudyPlannerAPI.DTOs.AccountManagementDTO;
+using StudyPlannerAPI.Helper;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.AccountManagementRepository;
 
@@ -36,7 +37,7 @@ namespace StudyPlannerAPI.Services.AccountManagementService
                 Email = account.Email!,
                 ParentEmail = account.ParentEmail,
                 GroupId = account.GroupId,
-                CreatedAt = DateTime.Now
+                CreatedAt = HelperTime.NowVN()
             };
           
             using (var transaction = await _context.Database.BeginTransactionAsync())
