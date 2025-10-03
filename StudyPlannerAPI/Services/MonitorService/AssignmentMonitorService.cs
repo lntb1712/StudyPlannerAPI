@@ -40,34 +40,26 @@ namespace StudyPlannerAPI.Services.MonitorService
 
                         foreach (var assignment in overdueAssignments)
                         {
-                            // Assuming we notify students in the class
-                            // Fetch students in the class (adjust table name as per your model)
-                            var classStudents = assignment.AssignmentDetails
-                                .Select(cs => cs.StudentId)
-                                .ToList();
-
-                            foreach (var studentId in classStudents)
+                            foreach (var detail in assignment.AssignmentDetails.Where(d => d.StatusId != 4))
                             {
+                                detail.StatusId = 4;
+
                                 var notification = new Notification
                                 {
-                                    UserName = studentId,
+                                    UserName = detail.StudentId,
                                     Title = $"Bài tập quá hạn từ giáo viên {assignment.TeacherId}",
                                     Content = $"Bài tập '{assignment.Title}' đã quá hạn. Vui lòng nộp ngay.",
                                     Type = "Bài tập quá hạn",
                                     IsRead = false,
                                     CreatedAt = HelperTime.NowVN(),
                                 };
-                                var detail = assignment.AssignmentDetails.FirstOrDefault(x => x.StudentId == studentId);
-                                if (detail != null)
-                                {
-                                    detail.StatusId = 4;
-                                }
                                 context.Notifications.Add(notification);
 
-                                await _hubContext.Clients.User(studentId!)
+                                await _hubContext.Clients.User(detail.StudentId!)
                                     .SendAsync("ReceiveOverdueAssignmentNotification", notification.Title, notification.Content);
                             }
                         }
+                    }
                         await context.SaveChangesAsync();
                     }
                     catch (Exception ex)
