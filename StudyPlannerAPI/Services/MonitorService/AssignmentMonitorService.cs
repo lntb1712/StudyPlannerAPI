@@ -59,7 +59,7 @@ namespace StudyPlannerAPI.Services.MonitorService
                                     .SendAsync("ReceiveOverdueAssignmentNotification", notification.Title, notification.Content);
                             }
                         }
-                    }
+                    
                         await context.SaveChangesAsync();
                     }
                     catch (Exception ex)
