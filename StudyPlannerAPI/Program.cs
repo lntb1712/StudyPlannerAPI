@@ -28,6 +28,7 @@ using StudyPlannerAPI.Services.AssignmentDetailService;
 using StudyPlannerAPI.Services.AssignmentService;
 using StudyPlannerAPI.Services.ClassService;
 using StudyPlannerAPI.Services.CloudinaryService;
+using StudyPlannerAPI.Services.DashboardService;
 using StudyPlannerAPI.Services.EmailService;
 using StudyPlannerAPI.Services.FunctionService;
 using StudyPlannerAPI.Services.GroupFunctionService;
@@ -130,11 +131,12 @@ builder.Services.AddScoped<IAssignmentDetailService, AssignmentDetailService>();
 builder.Services.AddScoped<ITaskManagementService,TaskManagementService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IMessagingService, MessagingService>();
-
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 //Add Monitor service
 builder.Services.AddHostedService<ScheduleMonitorService>();
 builder.Services.AddHostedService<ReminderMonitorService>();
+builder.Services.AddHostedService<AssignmentMonitorService>();
 // Đăng ký IHttpContextAccessor để thực hiện sử dụng HttpCookie
 builder.Services.AddHttpContextAccessor();
 

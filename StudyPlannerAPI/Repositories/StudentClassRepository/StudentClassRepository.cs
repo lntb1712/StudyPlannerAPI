@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using StudyPlannerAPI.DTOs.StudentClassDTO;
 using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.RepositoryBase;
+using System.Net.WebSockets;
 
 namespace StudyPlannerAPI.Repositories.StudentClassRepository
 {
@@ -29,6 +31,25 @@ namespace StudyPlannerAPI.Repositories.StudentClassRepository
                                 .FirstOrDefaultAsync(sc => sc.StudentId == studentId && sc.ClassId == classId)!;
            return response!;
         }
+
+        public async Task<List<StudentClassTotalDTO>> GetTotalStudentInClass()
+        {
+            var response = await _context.Classes
+                .GroupJoin(
+                    _context.StudentClasses,
+                    cls => cls.ClassId,
+                    sc => sc.ClassId,
+                    (cls, students) => new StudentClassTotalDTO
+                    {
+                        ClassId = cls.ClassId,
+                        ClassName = cls.ClassName,
+                        TotalStudent = students.Count() // Count will be 0 if no students
+                    })
+                .ToListAsync();
+
+            return response;
+        }
+
 
         public IEnumerable<StudentClass> SearchStudentClassByText(string textToSearch)
         {

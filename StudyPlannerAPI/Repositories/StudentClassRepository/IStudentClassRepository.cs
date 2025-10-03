@@ -1,4 +1,5 @@
-﻿using StudyPlannerAPI.Models;
+﻿using StudyPlannerAPI.DTOs.StudentClassDTO;
+using StudyPlannerAPI.Models;
 using StudyPlannerAPI.Repositories.RepositoryBase;
 
 namespace StudyPlannerAPI.Repositories.StudentClassRepository
@@ -8,5 +9,6 @@ namespace StudyPlannerAPI.Repositories.StudentClassRepository
         IEnumerable<StudentClass> GetAllStudentClass();
         Task<StudentClass> GetStudentClassbyIdAsync(string classId, string studentId);
         IEnumerable<StudentClass> SearchStudentClassByText(string textToSearch);
+        Task<List<StudentClassTotalDTO>> GetTotalStudentInClass();
     }
 }

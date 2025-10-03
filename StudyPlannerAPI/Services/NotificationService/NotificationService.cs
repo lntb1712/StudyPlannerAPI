@@ -50,6 +50,8 @@ namespace StudyPlannerAPI.Services.NotificationService
                         .SendAsync("ReceiveNotification", notification.Title, notification.Content);
                     await _hubContext.Clients.User(notification.UserName!)
                         .SendAsync("ReceiveReminderNotification", notification.Title, notification.Content);
+                    await _hubContext.Clients.User(notification.UserName!)
+                        .SendAsync("ReceiveOverdueAssignmentNotification", notification.Title, notification.Content);
                     await transaction.CommitAsync();
                     return new ServiceResponse<bool>(true, "Thêm thông báo thành công");
                 }
