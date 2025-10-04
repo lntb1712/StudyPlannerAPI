@@ -99,7 +99,7 @@ namespace StudyPlannerAPI.Services.TaskManagementService
                 {
                     await _taskManagementRepository.DeleteAsync(taskId,saveChanges:false);
                     await _context.SaveChangesAsync();
-                    await transaction.RollbackAsync();
+                    await transaction.CommitAsync();
                     return new ServiceResponse<bool>(true, "Xóa việc cần làm thành công"); 
                 }
                 catch (DbUpdateException dbEx)

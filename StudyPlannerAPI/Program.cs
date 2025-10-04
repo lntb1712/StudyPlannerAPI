@@ -48,13 +48,13 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//// Thêm đoạn này để Render biết dùng PORT nó cấp
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+////// Thêm đoạn này để Render biết dùng PORT nó cấp
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(int.Parse(port)); // lắng nghe trên PORT mà Render cấp
-});
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    options.ListenAnyIP(int.Parse(port)); // lắng nghe trên PORT mà Render cấp
+//});
 
 
 // Add services to the container.
