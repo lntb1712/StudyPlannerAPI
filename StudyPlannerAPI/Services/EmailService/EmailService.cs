@@ -19,11 +19,11 @@ namespace StudyPlannerAPI.Services.EmailService
             try
             {
                 var client = new SendGridClient(_apiKey);
-                var from = new EmailAddress("support@studyplanner.com", "Study Planner");
+                var from = new EmailAddress("nhocbinh7a8@gmail.com", "Study Planner");
                 var subject = "Mã xác thực tạo tài khoản - Study Planner";
                 var to = new EmailAddress(toEmail, userName);
 
-                var htmlContent = $@"
+                var htmlContent = $@" 
                     <h2>Xin chào {userName},</h2>
                     <p>Mã xác thực để tạo tài khoản phụ huynh của bạn là:
                     <strong style='font-size: 24px; color: #3b82f6;'>{otpCode}</strong></p>
