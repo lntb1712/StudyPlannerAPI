@@ -48,7 +48,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-////// Thêm đoạn này để Render biết dùng PORT nó cấp
+//// Thêm đoạn này để Render biết dùng PORT nó cấp
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 
 builder.WebHost.ConfigureKestrel(options =>
