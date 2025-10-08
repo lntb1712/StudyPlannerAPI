@@ -1,8 +1,3 @@
-Perfect 👌 — that’s a great stack addition!
-Here’s an updated **English README.md** for your GitHub repo **StudyPlannerAPI**, now including **SignalR**, **Cloudinary**, and **SOLID principles** — written in a polished, professional tone suitable for employers, collaborators, or portfolio viewers.
-
----
-
 ````markdown
 # 📘 StudyPlannerAPI
 
